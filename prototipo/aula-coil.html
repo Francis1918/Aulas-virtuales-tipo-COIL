@@ -60,6 +60,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--font-body); }
 a { color: var(--link); }
@@ -281,6 +282,14 @@ td.num { font-variant-numeric: tabular-nums; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .meter > span { background: var(--gold); } }
 .meter > i { position: absolute; top: -4px; bottom: -4px; width: 3px; background: var(--red); border-radius: 2px; }
 
+.vplayer { display: block; width: 100%; max-height: 420px; background: #000; border-radius: 4px; }
+.vid-miss { padding: 22px; text-align: center; background: var(--surface-2); color: var(--muted); border-radius: 4px; font-size: .85rem; }
+.dropzone { border: 1px dashed var(--line); border-radius: var(--radius); padding: 12px; display: grid; gap: 10px; background: var(--surface-2); }
+.dz-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.rec { display: flex; gap: 10px; align-items: center; }
+.cmsg { font-size: .85rem; }
+.cmsg.bad { color: var(--bad); font-weight: 600; }
+.modal.composer { width: min(680px, 100%); }
 .overlay { position: fixed; inset: 0; background: rgba(10,15,30,.55); display: grid; place-items: center; padding: 16px; z-index: 40; }
 .modal { background: var(--surface); color: var(--fg); width: min(640px, 100%); max-height: 90vh; overflow: auto; border-radius: var(--radius); padding: 22px; border-top: 5px solid var(--gold); }
 .modal h2 { font-size: 1.4rem; margin-bottom: 12px; }
@@ -332,7 +341,7 @@ const T = {
     student: 'Estudiante', team: 'Equipo', institution: 'Institución', progress: 'Progreso', badge: 'Insignia COIL', issueBadge: 'Emitir insignia', issued: 'Emitida',
     badgeLocked: 'Completa todas las actividades requeridas para desbloquear tu insignia.', badgeReady: '¡Completaste todo! Tu docente emitirá la insignia.', badgeEarned: 'Insignia obtenida el',
     checklist: 'Actividades requeridas', partner: 'Universidad socia', courseEpn: 'Asignatura en la EPN', coursePartner: 'Asignatura en la universidad socia',
-    start: 'Inicio', end: 'Fin', description: 'Descripción', meetUrl: 'Enlace de Zoom o Teams (opcional)', driveUrl: 'Carpeta de Drive u OneDrive (opcional)',
+    start: 'Inicio', end: 'Fin', description: 'Descripción', meetUrl: 'Enlace de reunión: Teams, Zoom, Meet, Webex… (opcional)', driveUrl: 'Carpeta de archivos: Drive, OneDrive… (opcional)',
     useTemplate: 'Crear actividades base de las 4 fases COIL', calTitle: 'Calendario COIL', calHelp: 'Cada fecha aparece en tu zona horaria y en la de la otra universidad.',
     teacher: 'Docente', studentRole: 'Estudiante', teachers: 'docentes', students: 'estudiantes', teamsN: 'equipos', localTime: 'hora local',
     t_sub: 'Entrega enviada', t_grade: 'Calificación publicada', t_proj: 'Proyecto creado', t_post: 'Mensaje publicado', t_refl: 'Reflexión guardada', t_badge: 'Insignia emitida',
@@ -362,6 +371,14 @@ const T = {
     t_comment: 'Comentario publicado', t_plan: 'Plan guardado',
     m_wall: 'Actividad Base de datos (plantilla galería) con comentarios y valoraciones; o foro con enlaces', m_plan: 'Página o Libro del curso, generado desde la plantilla',
     m_report: 'Informes del curso y exportación del Calificador a CSV/XLSX', m_weights: 'Calificador con categorías ponderadas; la insignia se otorga por calificación mínima del curso', m_template: 'Tarea de texto en línea con límite de palabras',
+    gm_own: 'Cada docente califica a los suyos', gm_both: 'Califican ambos docentes (promedio)', gm_one: 'Califica solo', gradedBy: 'Califica', st_partial: 'Calificación parcial',
+    cfgBtn: 'Configurar calificación', cfgHelp: 'Escribe el peso de cada actividad, quién la califica y, en las de video, los comentarios mínimos y la duración máxima. Los pesos deben sumar 100 %.',
+    videoMax: 'Duración máx. del video (min)', t_cfg: 'Calificación configurada', otherEvals: 'Otras evaluaciones',
+    composerTitle: 'Publicar video', subject: 'Asunto', uploadVideo: 'Subir video', recordVideo: 'Grabar con la cámara', stopRec: 'Detener', replaceVideo: 'Reemplazar mi video', removeVideo: 'Quitar',
+    videoMissing: 'Este video no está disponible en este navegador.', videoSaveFail: 'No se pudo guardar el video en este navegador.', camFail: 'No se pudo usar la cámara. Revisa los permisos o sube un archivo.',
+    videoTooLong: 'El video dura más de lo permitido', videoTooBig: 'El archivo supera el tamaño máximo', notVideo: 'El archivo no es un video.', maxLabel: 'Máximo', writeSomething: 'Escribe algo…', hostedVideo: 'Video alojado en la plataforma',
+    meetLinks: 'Enlaces', editLinks: 'Editar enlaces', linkLabel: 'Nombre', t_links: 'Enlaces guardados', meetLinkHelp: 'Pon el enlace de la herramienta que usen para reunirse o compartir archivos: Teams, Zoom, Google Meet, Webex u otra.',
+    sessionUrl: 'Enlace de la reunión (solo sesiones)', meetGeneric: 'Reunión virtual',
   },
   en: {
     brandSub: 'International collaboration', navHome: 'Dashboard', navCal: 'Calendar', viewAs: 'View as',
@@ -393,7 +410,7 @@ const T = {
     student: 'Student', team: 'Team', institution: 'Institution', progress: 'Progress', badge: 'COIL badge', issueBadge: 'Issue badge', issued: 'Issued',
     badgeLocked: 'Complete every required activity to unlock your badge.', badgeReady: 'All done! Your teacher will issue the badge.', badgeEarned: 'Badge earned on',
     checklist: 'Required activities', partner: 'Partner university', courseEpn: 'EPN course', coursePartner: 'Partner course',
-    start: 'Start', end: 'End', description: 'Description', meetUrl: 'Zoom or Teams link (optional)', driveUrl: 'Drive or OneDrive folder (optional)',
+    start: 'Start', end: 'End', description: 'Description', meetUrl: 'Meeting link: Teams, Zoom, Meet, Webex… (optional)', driveUrl: 'Files folder: Drive, OneDrive… (optional)',
     useTemplate: 'Create starter activities for the 4 COIL phases', calTitle: 'COIL calendar', calHelp: 'Every date shows your time zone and the other university’s.',
     teacher: 'Teacher', studentRole: 'Student', teachers: 'teachers', students: 'students', teamsN: 'teams', localTime: 'local time',
     t_sub: 'Submission sent', t_grade: 'Grade published', t_proj: 'Project created', t_post: 'Message posted', t_refl: 'Reflection saved', t_badge: 'Badge issued',
@@ -423,6 +440,14 @@ const T = {
     t_comment: 'Comment posted', t_plan: 'Plan saved',
     m_wall: 'Database activity (gallery template) with comments and ratings; or a forum with links', m_plan: 'Course Page or Book, generated from the template',
     m_report: 'Course reports and Gradebook export to CSV/XLSX', m_weights: 'Gradebook with weighted categories; the badge is awarded by minimum course grade', m_template: 'Online text assignment with word limit',
+    gm_own: 'Each teacher grades their own students', gm_both: 'Both teachers grade (average)', gm_one: 'Graded only by', gradedBy: 'Graded by', st_partial: 'Partially graded',
+    cfgBtn: 'Configure grading', cfgHelp: 'Type each activity’s weight, who grades it and, for video activities, the minimum comments and maximum length. Weights must add up to 100%.',
+    videoMax: 'Max. video length (min)', t_cfg: 'Grading configured', otherEvals: 'Other evaluations',
+    composerTitle: 'Post a video', subject: 'Subject', uploadVideo: 'Upload video', recordVideo: 'Record with camera', stopRec: 'Stop', replaceVideo: 'Replace my video', removeVideo: 'Remove',
+    videoMissing: 'This video is not available in this browser.', videoSaveFail: 'The video could not be saved in this browser.', camFail: 'The camera could not be used. Check permissions or upload a file.',
+    videoTooLong: 'The video is longer than allowed', videoTooBig: 'The file exceeds the maximum size', notVideo: 'The file is not a video.', maxLabel: 'Maximum', writeSomething: 'Write something…', hostedVideo: 'Video hosted on the platform',
+    meetLinks: 'Links', editLinks: 'Edit links', linkLabel: 'Name', t_links: 'Links saved', meetLinkHelp: 'Add the link of the tool you use to meet or share files: Teams, Zoom, Google Meet, Webex or any other.',
+    sessionUrl: 'Meeting link (sessions only)', meetGeneric: 'Virtual meeting',
   },
 };
 
@@ -448,7 +473,7 @@ const RUBRIC = [
 const CITY = { 'America/Guayaquil': 'Quito', 'America/Chihuahua': 'Chihuahua', 'Europe/Amsterdam': 'Ámsterdam' };
 const TEAM_NAMES = ['Cóndor', 'Tulipán', 'Colibrí', 'Molino', 'Volcán', 'Canal', 'Chimborazo', 'Delta'];
 const DAY = 864e5;
-const LS_KEY = 'aula-coil-demo-v2';
+const LS_KEY = 'aula-coil-demo-v3';
 
 /* =====================================================================
    2. DATOS DE EJEMPLO. Misma forma que las tablas de db/schema.sql
@@ -483,20 +508,21 @@ function seed() {
     projects: [
       { id: 'p1', title: { es: 'Ciudades inteligentes con datos abiertos', en: 'Smart cities with open data' }, institutions: ['epn', 'pu'],
         courses: { epn: 'Business Intelligence (ISWD743)', pu: 'Análisis de datos para la sociedad' }, term: '2026-B', status: 'active',
-        startsOn: day(-15), endsOn: day(55), passPct: 70, meetUrl: 'https://zoom.us/', driveUrl: 'https://drive.google.com/',
+        startsOn: day(-15), endsOn: day(55), passPct: 70,
+        links: [{ label: 'Microsoft Teams', url: 'https://teams.microsoft.com/' }, { label: 'Carpeta compartida (OneDrive)', url: 'https://onedrive.live.com/' }],
         description: { es: 'Equipos mixtos EPN–PU comparan datos abiertos de movilidad de Quito y Chihuahua y construyen un dashboard con recomendaciones para ambas ciudades.',
           en: 'Mixed EPN–PU teams compare open mobility data from Quito and Chihuahua and build a dashboard with recommendations for both cities.' },
         plan: {
           objectives: 'Comprender cómo se publican y usan los datos abiertos de movilidad en dos ciudades.\nComparar indicadores de ambos contextos y proponer mejoras viables.\nDesarrollar habilidades de colaboración intercultural y comunicación a distancia.',
           ods: [9, 11, 13], strategy: ['abpro'],
-          tools: { content: { tool: 'Aula COIL', url: '' }, meet: { tool: 'Zoom / Teams', url: 'https://zoom.us/' }, chat: { tool: 'Foro del equipo (Aula COIL)', url: '' }, collab: { tool: 'Muro de videos (Aula COIL)', url: '' } },
+          tools: { content: { tool: 'Aula COIL', url: '' }, meet: { tool: 'Microsoft Teams', url: 'https://teams.microsoft.com/' }, chat: { tool: 'Foro del equipo (Aula COIL)', url: '' }, collab: { tool: 'Muro de videos (Aula COIL)', url: '' } },
           inst: {
             epn: { schedule: 'Mié 11:00–13:00 · Jue 13:00–16:00 (hora de Quito)', semStart: day(-45), semEnd: day(85), breaks: 'Sin pausas durante la colaboración' },
             pu: { schedule: 'Mar y vie 10:00–13:00 (hora de Chihuahua)', semStart: day(-60), semEnd: day(70), breaks: 'Semana de bienestar a mitad del semestre' },
           } } },
       { id: 'p2', title: { es: 'Emprendimiento social sin fronteras', en: 'Social entrepreneurship without borders' }, institutions: ['epn', 'pu'],
         courses: { epn: 'Emprendimiento (ADMD700)', pu: 'Laboratorio de innovación' }, term: '2027-A', status: 'draft',
-        startsOn: day(25), endsOn: day(95), passPct: 70, meetUrl: '', driveUrl: '', plan: {},
+        startsOn: day(25), endsOn: day(95), passPct: 70, links: [], plan: {},
         description: { es: 'Borrador: diseño de un emprendimiento social binacional.', en: 'Draft: designing a binational social venture.' } },
     ],
     members,
@@ -505,22 +531,22 @@ function seed() {
       A('a1', 1, 'session', 'team', 'Sesión rompehielo: círculo de historias', 'Icebreaker session: story circle', at(-12, 15)),
       A('a2', 1, 'task', 'individual', 'Video rompehielo (1–3 min)', 'Icebreaker video (1–3 min)', at(-8, 21, 59),
         'Graba un video de 1 a 3 minutos: quién eres, de dónde eres, qué estudias y qué te gusta hacer en tu tiempo libre. Súbelo a tu cuenta (YouTube, OneDrive o Teams) y pega el enlace. Después comenta, en el muro, al menos a otros dos compañeros que no conozcas. Este es un lugar seguro y todos nos respetamos.',
-        { weight: 20, wall: true, minComments: 2 }),
+        { weight: 20, wall: true, minComments: 2, videoMax: 3, grading: { mode: 'own' } }),
       A('a3', 1, 'reflection', 'individual', 'Diario 1: primeras impresiones', 'Journal 1: first impressions', at(-6, 21, 59)),
       A('a4', 2, 'task', 'team', 'Actividad colaborativa 1: conceptualización', 'Collaborative activity 1: framing', at(5, 21, 59),
         'En equipo, describan el problema y señalen las oportunidades de mejora que comparten ambos contextos. Respondan: ¿qué datos abiertos existen en cada ciudad y qué tan útiles son? Entreguen un enlace a una presentación o documento compartido.',
-        { weight: 30 }),
+        { weight: 30, grading: { mode: 'one', grader: 't1' } }),
       A('a5', 2, 'session', 'team', 'Revisión de avances por equipo', 'Team progress check-in', at(3, 15)),
       A('a6', 3, 'task', 'team', 'Actividad colaborativa 2: reporte del trabajo conjunto', 'Collaborative activity 2: joint report', at(30, 21, 59),
         'Elaboren el reporte del trabajo conjunto con la estructura indicada. Cada sección tiene un límite de palabras: sean concisos y claros. Pueden adjuntar un enlace a imágenes o a un esquema.',
-        { weight: 30, template: [
+        { weight: 30, grading: { mode: 'one', grader: 't2' }, template: [
           { es: 'Objetivos del trabajo', en: 'Objectives', max: 120 }, { es: 'Metodología y resultados', en: 'Methodology and results', max: 300 },
           { es: 'Discusión', en: 'Discussion', max: 500 }, { es: 'Conclusiones', en: 'Conclusions', max: 150 }] }),
       A('a7', 3, 'reflection', 'individual', 'Diario 2: trabajar entre culturas', 'Journal 2: working across cultures', at(33, 21, 59)),
       A('a8', 4, 'session', 'team', 'Presentación final ante el grupo', 'Final presentation to the group', at(48, 15)),
       A('a9', 4, 'task', 'individual', 'Reflexión final en video (1–3 min)', 'Final reflection video (1–3 min)', at(52, 21, 59),
         'Publica un video de 1 a 3 minutos con tu reflexión: ¿cómo influye tu bagaje cultural en la forma en que trabajas con otras personas? ¿La colaboración internacional cambió tu experiencia de aprendizaje o tu visión del mundo? ¿Qué mejorarías? Tómalas solo como guía.',
-        { weight: 20, wall: true, minComments: 0 }),
+        { weight: 20, wall: true, minComments: 0, videoMax: 3, grading: { mode: 'both' } }),
     ],
     resources: [
       { id: 'r1', projectId: 'p1', title: 'SUNY COIL Center: guía de colaboración', url: 'https://coil.suny.edu/', lang: 'en' },
@@ -644,7 +670,45 @@ function subFor(a, sid) {
   return db.submissions.find((s) => s.activityId === a.id && s.authorId === sid);
 }
 const reflFor = (pid, sid, phase) => db.reflections.find((r) => r.projectId === pid && r.authorId === sid && r.phase === phase);
-const evalFor = (sub) => sub && db.evaluations.find((e) => e.submissionId === sub.id);
+/* ---------- Quién califica: por actividad, "cada docente a los suyos", "ambos (promedio)" o "uno designado" ---------- */
+const gradingOf = (a) => Object.assign({ mode: 'own', grader: null }, a.grading || {});
+const evalsOf = (sub) => (sub ? db.evaluations.filter((e) => e.submissionId === sub.id) : []);
+const evalBy = (sub, tid) => evalsOf(sub).find((e) => e.evaluatorId === tid);
+/* Evaluaciones que cuentan para una persona según quién califica la actividad */
+function evsFor(a, sid) {
+  const sub = subFor(a, sid); if (!sub) return [];
+  const g = gradingOf(a); const evs = evalsOf(sub);
+  if (g.mode === 'one') return evs.filter((e) => !g.grader || e.evaluatorId === g.grader);
+  if (g.mode === 'both') return evs;
+  const mi = person(sid).institutionId; return evs.filter((e) => person(e.evaluatorId).institutionId === mi);
+}
+const scoreOf = (a, sid) => { const evs = evsFor(a, sid); return evs.length ? evs.reduce((n, e) => n + e.score, 0) / evs.length : null; };
+function isGraded(a, sid) {
+  const evs = evsFor(a, sid); if (!evs.length) return false;
+  return gradingOf(a).mode === 'both' ? evs.length >= teachersOf(a.projectId).length : true;
+}
+/* ¿Puede este docente calificar la entrega y aún no lo hizo? */
+function canGrade(a, sub, tid) {
+  if (!a || !tid || evalBy(sub, tid)) return false;
+  const g = gradingOf(a);
+  if (g.mode === 'both') return true;
+  if (g.mode === 'one') return !g.grader || g.grader === tid;
+  const ti = person(tid).institutionId;
+  const authors = a.mode === 'team' ? studentsOf(a.projectId).filter((m) => m.teamId === sub.teamId).map((m) => person(m.personId)) : [person(sub.authorId)];
+  return authors.some((x) => x.institutionId === ti);
+}
+function graderLabel(a) {
+  const g = gradingOf(a);
+  return g.mode === 'both' ? t('gm_both') : g.mode === 'one' ? `${t('gm_one')} ${g.grader ? person(g.grader).name : ''}`.trim() : t('gm_own');
+}
+const gradedByNote = (a) => (a.weight > 0 ? `<p class="muted" style="margin:0;font-size:.86rem">${esc(t('gradedBy'))}: <strong>${esc(graderLabel(a))}</strong> · ${a.weight} %</p>` : '');
+const gradeOptions = (p, g) => { const cur = Object.assign({ mode: 'own' }, g || {});
+  return `<option value="own" ${cur.mode === 'own' ? 'selected' : ''}>${esc(t('gm_own'))}</option><option value="both" ${cur.mode === 'both' ? 'selected' : ''}>${esc(t('gm_both'))}</option>`
+    + teachersOf(p.id).map((m) => person(m.personId)).map((x) => `<option value="one:${esc(x.id)}" ${cur.mode === 'one' && cur.grader === x.id ? 'selected' : ''}>${esc(t('gm_one'))} ${esc(x.name)}</option>`).join(''); };
+const parseGrading = (v) => (String(v || '').startsWith('one:') ? { mode: 'one', grader: v.slice(4) } : { mode: v === 'both' ? 'both' : 'own' });
+/* Solo se aceptan enlaces http(s); evita esquemas como javascript: */
+const safeUrl = (u) => (/^https?:\/\/\S+$/i.test(String(u || '').trim()) ? String(u).trim() : '');
+const labelFromUrl = (u) => { const h = (u.match(/^https?:\/\/([^/]+)/i) || [])[1] || ''; return /zoom\./i.test(h) ? 'Zoom' : /teams\./i.test(h) ? 'Microsoft Teams' : /meet\.google/i.test(h) ? 'Google Meet' : /webex\./i.test(h) ? 'Cisco Webex' : /drive\.google/i.test(h) ? 'Google Drive' : /(onedrive|sharepoint)/i.test(h) ? 'OneDrive' : t('meetGeneric'); };
 const words = (s) => (String(s || '').trim().match(/\S+/g) || []).length;
 /* Comentarios distintos que hizo una persona a publicaciones ajenas de una actividad con muro */
 const commentsBy = (a, sid) => {
@@ -657,8 +721,8 @@ const passPct = (pid) => (project(pid) || {}).passPct || 70;
 function gradeOf(pid, sid) {
   let pct = 0, graded = 0, total = 0;
   db.activities.filter((a) => a.projectId === pid && a.weight > 0).forEach((a) => {
-    total += a.weight; const ev = evalFor(subFor(a, sid));
-    if (ev) { pct += (a.weight * ev.score) / 10; graded += a.weight; }
+    total += a.weight; const sc = scoreOf(a, sid);
+    if (sc != null) { pct += (a.weight * sc) / 10; graded += a.weight; }
   });
   return { pct: Math.round(pct * 10) / 10, graded, total };
 }
@@ -673,7 +737,8 @@ function statusOf(a, sid) {
   if (a.kind === 'reflection') return isDone(a, sid) ? ['st_done', 'ok'] : new Date(a.due) < Date.now() ? ['st_overdue', 'bad'] : ['st_pending', 'warn'];
   const s = subFor(a, sid);
   if (s && commentsBy(a, sid) < (a.minComments || 0)) return ['st_incomplete', 'warn'];
-  if (s && evalFor(s)) return ['st_graded', 'ok'];
+  if (s && isGraded(a, sid)) return ['st_graded', 'ok'];
+  if (s && evsFor(a, sid).length) return ['st_partial', 'warn'];
   if (s) return ['st_submitted', 'ok'];
   return new Date(a.due) < Date.now() ? ['st_overdue', 'bad'] : ['st_pending', 'warn'];
 }
@@ -707,7 +772,7 @@ const actions = {
     const pid = uid('p'); const partner = db.institutions.find((i) => i.id !== me().institutionId) || db.institutions[1];
     const p = { id: pid, title: { es: f.title, en: f.titleOther || f.title }, institutions: ['epn', partner.id === 'epn' ? me().institutionId : partner.id],
       courses: { epn: f.courseEpn, pu: f.coursePartner }, term: f.start.slice(0, 4), status: 'active', startsOn: f.start, endsOn: f.end,
-      meetUrl: f.meetUrl, driveUrl: f.driveUrl, passPct: 70, plan: {}, description: { es: f.description, en: f.description } };
+      links: [{ u: f.meetUrl, drive: false }, { u: f.driveUrl, drive: true }].map((x) => { const url = safeUrl(x.u); if (!url) return null; const lb = labelFromUrl(url); return { label: x.drive && lb === t('meetGeneric') ? t('openDrive') : lb, url }; }).filter(Boolean), passPct: 70, plan: {}, description: { es: f.description, en: f.description } };
     db.projects.push(p);
     db.members.push({ projectId: pid, personId: me().id, role: 'teacher', teamId: null, badgeAt: null });
     db.people.filter((x) => x.kind === 'teacher' && x.id !== me().id).forEach((x) => db.members.push({ projectId: pid, personId: x.id, role: 'teacher', teamId: null, badgeAt: null }));
@@ -716,11 +781,11 @@ const actions = {
       const mk = (frac, phase, kind, mode, es, en, extra) => db.activities.push(Object.assign({ id: uid('a'), projectId: pid, phase, kind, mode, title: { es, en }, instructions: '', weight: 0,
         due: new Date(s + span * frac + 21 * 36e5 + 59 * 6e4).toISOString() }, extra || {}));
       mk(0.08, 1, 'session', 'team', 'Sesión rompehielo', 'Icebreaker session');
-      mk(0.15, 1, 'task', 'individual', 'Video rompehielo (1–3 min)', 'Icebreaker video (1–3 min)', { weight: 20, wall: true, minComments: 2 });
+      mk(0.15, 1, 'task', 'individual', 'Video rompehielo (1–3 min)', 'Icebreaker video (1–3 min)', { weight: 20, wall: true, minComments: 2, videoMax: 3 });
       mk(0.40, 2, 'task', 'team', 'Actividad colaborativa 1', 'Collaborative activity 1', { weight: 30 });
       mk(0.75, 3, 'task', 'team', 'Actividad colaborativa 2', 'Collaborative activity 2', { weight: 30 });
       mk(0.92, 4, 'session', 'team', 'Presentación final', 'Final presentation');
-      mk(1.0, 4, 'task', 'individual', 'Reflexión final en video (1–3 min)', 'Final reflection video (1–3 min)', { weight: 20, wall: true, minComments: 0 });
+      mk(1.0, 4, 'task', 'individual', 'Reflexión final en video (1–3 min)', 'Final reflection video (1–3 min)', { weight: 20, wall: true, minComments: 0, videoMax: 3 });
     }
     Object.assign(ui, { view: 'project', projectId: pid, tab: 'teams', modal: null });
     toast(t('t_proj'));
@@ -729,13 +794,14 @@ const actions = {
   createActivity(f) {
     db.activities.push({ id: uid('a'), projectId: ui.projectId, phase: +f.phase, kind: f.kind, mode: f.kind === 'reflection' ? 'individual' : f.mode,
       title: ui.lang === 'es' ? { es: f.title, en: f.titleOther || f.title } : { en: f.title, es: f.titleOther || f.title },
-      instructions: f.instructions, due: zonedToUtc(f.due, me().tz), weight: Math.max(0, +f.weight || 0), wall: !!f.wall, minComments: f.wall ? Math.max(0, +f.minComments || 0) : 0 });
+      instructions: f.instructions, due: zonedToUtc(f.due, me().tz), weight: Math.max(0, +f.weight || 0), wall: !!f.wall, minComments: f.wall ? Math.max(0, +f.minComments || 0) : 0,
+      videoMax: f.wall ? Math.max(0.5, +f.videoMax || 3) : undefined, grading: parseGrading(f.gm), url: safeUrl(f.url) });
     ui.form = null; toast(t('t_act'));
   },
   // POST /api/v1/activities/:id/submissions  (si ya existe: PATCH)
   submit(f, el) {
     const a = db.activities.find((x) => x.id === el.dataset.id); const sid = me().id; const prev = subFor(a, sid);
-    const data = { body: f.body || '', linkUrl: f.linkUrl || '', submittedAt: new Date().toISOString(), authorId: sid };
+    const data = { body: f.body || '', linkUrl: safeUrl(f.linkUrl), submittedAt: new Date().toISOString(), authorId: sid };
     if (a.template) {
       const secs = a.template.map((_, i) => f['sec' + i] || '');
       if (a.template.some((sec, i) => words(secs[i]) > sec.max)) { toast(t('tooLong')); return false; }
@@ -765,12 +831,28 @@ const actions = {
     const p = project(ui.projectId);
     p.passPct = Math.max(1, Math.min(100, +f.passPct || 70));
     p.plan = { objectives: f.objectives, ods: (f['ods[]'] || []).map(Number), strategy: f['strategy[]'] || [],
-      tools: Object.fromEntries(['content', 'meet', 'chat', 'collab'].map((k) => [k, { tool: f['tool_' + k], url: f['url_' + k] }])),
+      tools: Object.fromEntries(['content', 'meet', 'chat', 'collab'].map((k) => [k, { tool: f['tool_' + k], url: safeUrl(f['url_' + k]) }])),
       inst: Object.fromEntries(p.institutions.map((i) => [i, { schedule: f['sch_' + i], semStart: f['ss_' + i], semEnd: f['se_' + i], breaks: f['br_' + i] }])) };
     ui.form = null; toast(t('t_plan'));
   },
+  // PUT /api/v1/projects/:id/grading   (pesos, quién califica, comentarios mínimos, duración del video)
+  gradeCfg(f) {
+    const p = project(ui.projectId);
+    db.activities.filter((a) => a.projectId === p.id && a.kind === 'task').forEach((a) => {
+      if (('w_' + a.id) in f) a.weight = Math.max(0, Math.min(100, +f['w_' + a.id] || 0));
+      a.grading = parseGrading(f['gm_' + a.id]);
+      if (a.wall) { a.minComments = Math.max(0, +f['mc_' + a.id] || 0); a.videoMax = Math.max(0.5, +f['vm_' + a.id] || 3); }
+    });
+    p.passPct = Math.max(1, Math.min(100, +f.passPct || 70)); ui.form = null; toast(t('t_cfg'));
+  },
+  // PUT /api/v1/projects/:id/links   (cualquier herramienta: Teams, Zoom, Meet, Webex…)
+  links(f) {
+    const p = project(ui.projectId); const out = [];
+    for (let i = 0; i < 12; i++) { const url = safeUrl(f['url' + i]); if (url) out.push({ label: (f['label' + i] || '').trim() || labelFromUrl(url), url }); }
+    p.links = out; ui.form = null; toast(t('t_links'));
+  },
   // POST /api/v1/projects/:id/resources
-  resource(f) { db.resources.push({ id: uid('r'), projectId: ui.projectId, title: f.title, url: f.url, lang: ui.lang }); ui.form = null; toast(t('t_res')); },
+  resource(f) { db.resources.push({ id: uid('r'), projectId: ui.projectId, title: f.title, url: safeUrl(f.url) || '#', lang: ui.lang }); ui.form = null; toast(t('t_res')); },
   // POST /api/v1/submissions/:id/evaluations
   grade(f, el) {
     const scores = RUBRIC.map((c, i) => Math.max(0, Math.min(c.max, +f['c' + i] || 0)));
@@ -797,13 +879,14 @@ const clickActions = {
   modal: (d) => { ui.modal = d.modal || null; },
   form: (d) => { ui.form = ui.form === d.form ? null : d.form; },
   toggleAct: (d) => { ui.openAct = ui.openAct === d.id ? null : d.id; },
-  doReset: () => { db = seed(); Object.assign(ui, { view: 'home', projectId: null, modal: null, form: null, userId: 's1', lang: 'es' }); toast(t('t_reset')); },
+  doReset: () => { resetVideos(); db = seed(); Object.assign(ui, { view: 'home', projectId: null, modal: null, form: null, userId: 's1', lang: 'es' }); toast(t('t_reset')); },
   replyTo: (d) => { ui.replyTo = d.id; setTimeout(() => { const x = document.getElementById('f-post'); if (x) x.focus(); }); },
   cancelReply: () => { ui.replyTo = null; },
   reflPhase: (d) => { ui.reflPhase = +d.phase; },
   gradeSub: (d) => Object.assign(ui, { tab: 'grades', gradeSub: d.id }),
   goWall: (d) => Object.assign(ui, { tab: 'wall', wallAct: d.id }),
-  postWall: (d) => Object.assign(ui, { tab: 'activities', openAct: d.id }),
+  postWall: (d) => Object.assign(ui, { modal: 'composer', composerAct: d.id }),
+  composer: (d) => Object.assign(ui, { modal: 'composer', composerAct: d.id }),
   // POST /api/v1/submissions/:id/likes  (alterna)
   like: (d) => { const x = db.submissions.find((y) => y.id === d.id); if (!x) return; x.likes = x.likes || []; const i = x.likes.indexOf(ui.userId); if (i >= 0) x.likes.splice(i, 1); else x.likes.push(ui.userId); },
   // GET /api/v1/projects/:id/plan.docx · /report.docx · /grades.csv
@@ -937,11 +1020,11 @@ function viewProject() {
         ${ui.moodle ? `<p style="margin:10px 0 0">${mchip('project')}</p>` : ''}
       </div>
       <div class="integr"><span class="cap">${esc(t('integrations'))}</span>
-        ${p.meetUrl ? `<a class="btn small" href="${esc(p.meetUrl)}" target="_blank" rel="noopener">${ic('video')} Zoom / Teams</a>` : ''}
-        ${p.driveUrl ? `<a class="btn small ghost" href="${esc(p.driveUrl)}" target="_blank" rel="noopener">${ic('folder')} ${esc(t('openDrive'))}</a>` : ''}
-        ${!p.meetUrl && !p.driveUrl ? `<span class="muted" style="font-size:.85rem">${esc(t('none'))}</span>` : ''}
+        ${(p.links || []).map((l, i) => `<a class="btn small ${i ? 'ghost' : ''}" href="${esc(l.url)}" target="_blank" rel="noopener">${ic(i === 0 ? 'video' : 'link')} ${esc(l.label)}</a>`).join('') || `<span class="muted" style="font-size:.85rem">${esc(t('none'))}</span>`}
+        ${teacher ? `<button class="linkbtn" data-act="form" data-form="links">${esc(t('editLinks'))}</button>` : ''}
       </div>
     </section>
+    ${teacher && ui.form === 'links' ? linksForm(p) : ''}
     <ol class="phases" aria-label="${esc(t('phase'))}">${[1, 2, 3, 4].map((n) => `<li class="${n < ph ? 'done' : n === ph ? 'current' : ''}" ${n === ph ? 'aria-current="step"' : ''}>
       <span class="n">${n < ph ? ic('check') : ''} ${esc(t('phase'))} ${n}</span>${esc(L(PHASES[n]))}</li>`).join('')}</ol>
     <div class="tabs" role="tablist">${tabs.map(([k, i]) => `<button class="tab" role="tab" aria-selected="${ui.tab === k}" data-act="tab" data-tab="${k}">${ic(i)} ${esc(t('tab_' + k))}</button>`).join('')}</div>
@@ -961,6 +1044,11 @@ function tabActivities(p, teacher) {
         <label class="field"><span>${esc(t('weight'))} (%)</span><input id="f-a-weight" name="weight" type="number" min="0" max="100" value="0"></label>
         <label class="field"><span>${esc(t('minComments'))}</span><input id="f-a-minc" name="minComments" type="number" min="0" max="10" value="0"></label>
         <label class="check" style="align-self:end;min-height:38px"><input id="f-a-wall" name="wall" type="checkbox"> ${esc(t('wallOpt'))}</label>
+      </div>
+      <div class="row">
+        <label class="field"><span>${esc(t('gradedBy'))}</span><select id="f-a-gm" name="gm">${gradeOptions(p)}</select></label>
+        <label class="field"><span>${esc(t('videoMax'))}</span><input id="f-a-vm" name="videoMax" type="number" min="0.5" max="30" step="0.5" value="3"></label>
+        <label class="field"><span>${esc(t('sessionUrl'))}</span><input id="f-a-url" name="url" type="url" placeholder="https://"></label>
       </div>
       <label class="field"><span>${esc(t('title'))} *</span><input id="f-a-title" name="title" type="text" required></label>
       <label class="field"><span>${esc(t('titleOther'))}</span><input id="f-a-title2" name="titleOther" type="text"></label>
@@ -988,25 +1076,25 @@ function activityItem(a, p, teacher) {
   if (open) {
     const ins = a.instructions ? `<div class="box"><p><strong>${esc(t('instructions'))}</strong></p><p style="white-space:pre-wrap">${esc(a.instructions)}</p></div>` : '';
     if (a.kind === 'session') {
-      inner = `${ins}<div>${when(a.due, p.id)}</div>${p.meetUrl ? `<div><a class="btn small" href="${esc(p.meetUrl)}" target="_blank" rel="noopener">${ic('video')} ${esc(t('join'))}</a></div>` : ''}${mchip('session')}`;
+      inner = `${ins}<div>${when(a.due, p.id)}</div>${(() => { const l = a.url ? { url: a.url, label: '' } : (p.links || [])[0]; return l ? `<div><a class="btn small" href="${esc(l.url)}" target="_blank" rel="noopener">${ic('video')} ${esc(t('join'))}${l.label ? ' · ' + esc(l.label) : ''}</a></div>` : ''; })()}${mchip('session')}`;
     } else if (a.kind === 'reflection') {
       inner = `${ins}<div class="box"><p><strong>${esc(t('prompt'))}</strong></p><p>${esc(L(PROMPTS[a.phase]))}</p></div>
         ${teacher ? '' : `<div><button class="btn small" data-act="tab" data-tab="reflections">${ic('pen')} ${esc(t('goReflect'))}</button></div>`}`;
     } else if (teacher) {
       const subs = db.submissions.filter((s) => s.activityId === a.id);
-      inner = `${ins}${subs.length ? `<div class="table-wrap"><table><thead><tr><th>${esc(a.mode === 'team' ? t('team') : t('student'))}</th><th>${esc(t('status'))}</th><th>${esc(t('score'))}</th><th></th></tr></thead><tbody>
-        ${subs.map((s) => { const ev = evalFor(s); const who = s.teamId ? t('teamOf') + ' ' + (db.teams.find((x) => x.id === s.teamId) || {}).name : person(s.authorId).name;
-          return `<tr><td>${esc(who)}</td><td>${esc(rel(s.submittedAt))}</td><td class="num">${ev ? ev.score + '/10' : '—'}</td>
-          <td>${ev ? '' : `<button class="btn small" data-act="gradeSub" data-id="${esc(s.id)}">${esc(t('toGradeLink'))}</button>`}</td></tr>`; }).join('')}
+      inner = `${ins}${gradedByNote(a)}${subs.length ? `<div class="table-wrap"><table><thead><tr><th>${esc(a.mode === 'team' ? t('team') : t('student'))}</th><th>${esc(t('status'))}</th><th>${esc(t('score'))}</th><th></th></tr></thead><tbody>
+        ${subs.map((s) => { const evs = evalsOf(s); const who = s.teamId ? t('teamOf') + ' ' + (db.teams.find((x) => x.id === s.teamId) || {}).name : person(s.authorId).name;
+          return `<tr><td>${esc(who)}</td><td>${esc(rel(s.submittedAt))}</td><td class="num">${evs.length ? evs.map((e) => e.score + '/10 · ' + esc(person(e.evaluatorId).name.split(' ')[0])).join('<br>') : '—'}</td>
+          <td>${canGrade(a, s, u.id) ? `<button class="btn small" data-act="gradeSub" data-id="${esc(s.id)}">${esc(t('toGradeLink'))}</button>` : ''}</td></tr>`; }).join('')}
         </tbody></table></div>` : `<div class="empty">—</div>`}`;
     } else {
-      const s = subFor(a, u.id); const ev = evalFor(s); const tm = db.teams.find((x) => x.id === teamIdOf(p.id, u.id));
-      inner = `${ins}${a.wall ? wallHint(a, u) : ''}
+      const s = subFor(a, u.id); const evs = evsFor(a, u.id); const tm = db.teams.find((x) => x.id === teamIdOf(p.id, u.id));
+      inner = `${ins}${gradedByNote(a)}${a.wall ? wallHint(a, u) : ''}
         ${a.mode === 'team' ? `<p class="muted" style="margin:0;font-size:.86rem">${ic('users')} ${esc(t('teamOf'))} ${esc(tm ? tm.name : t('noTeam'))}. ${esc(t('teamNote'))}</p>` : ''}
         ${s ? `<div class="box"><p><strong>${esc(a.mode === 'team' ? t('teamSub') : t('yourSub'))}</strong> · ${esc(t('by'))} ${esc(person(s.authorId).name)} · ${esc(rel(s.submittedAt))}</p>
-            ${subBody(s)}${s.linkUrl ? `<p><a href="${esc(s.linkUrl)}" target="_blank" rel="noopener">${ic('link')} ${esc(s.linkUrl)}</a></p>` : ''}</div>` : ''}
-        ${ev ? `<div class="box" style="border-left:4px solid var(--ok)"><p><strong>${esc(t('score'))}: ${ev.score}/10</strong> · ${esc(person(ev.evaluatorId).name)}</p><p>${esc(ev.feedback)}</p></div>` : ''}
-        ${!ev && (a.mode !== 'team' || tm) ? submitForm(a, s) : ''}`;
+            ${videoEl(s)}${subBody(s)}${s.linkUrl ? `<p><a href="${esc(s.linkUrl)}" target="_blank" rel="noopener">${ic('link')} ${esc(s.linkUrl)}</a></p>` : ''}</div>` : ''}
+        ${evs.map((ev) => `<div class="box" style="border-left:4px solid var(--ok)"><p><strong>${esc(t('score'))}: ${ev.score}/10</strong> · ${esc(person(ev.evaluatorId).name)}</p><p>${esc(ev.feedback)}</p></div>`).join('')}
+        ${!evs.length && (a.mode !== 'team' || tm) ? (a.wall ? composerBtn(a, s) : submitForm(a, s)) : ''}`;
     }
   }
   return `<article class="act">
@@ -1118,8 +1206,8 @@ function tabGrades(p, teacher) {
   const u = me();
   if (!teacher) {
     const g = gradeOf(p.id, u.id); const pass = passPct(p.id);
-    const rows = db.activities.filter((a) => a.projectId === p.id && a.weight > 0).sort(byDate('due')).map((a) => { const sb = subFor(a, u.id); const ev = evalFor(sb); const [st, cls] = statusOf(a, u.id);
-      return `<tr><td>${esc(L(a.title))}</td><td class="num">${a.weight} %</td><td><span class="pill ${cls}">${esc(t(st))}</span></td><td class="num">${ev ? ev.score + '/10' : '—'}</td><td class="num">${ev ? ((a.weight * ev.score) / 10).toFixed(1) : '—'}</td><td style="min-width:220px">${ev ? esc(ev.feedback) : `<span class="muted">${esc(t('notGraded'))}</span>`}</td></tr>`; }).join('');
+    const rows = db.activities.filter((a) => a.projectId === p.id && a.weight > 0).sort(byDate('due')).map((a) => { const sc = scoreOf(a, u.id); const evs = evsFor(a, u.id); const [st, cls] = statusOf(a, u.id);
+      return `<tr><td>${esc(L(a.title))}<div class="muted" style="font-size:.78rem">${esc(graderLabel(a))}</div></td><td class="num">${a.weight} %</td><td><span class="pill ${cls}">${esc(t(st))}</span></td><td class="num">${sc == null ? '—' : sc.toFixed(1) + '/10'}</td><td class="num">${sc == null ? '—' : ((a.weight * sc) / 10).toFixed(1)}</td><td style="min-width:220px">${evs.length ? evs.map((e) => `<div><strong>${esc(person(e.evaluatorId).name)}:</strong> ${esc(e.feedback)}</div>`).join('') : `<span class="muted">${esc(t('notGraded'))}</span>`}</td></tr>`; }).join('');
     return `<div class="panel-h"><h2>${esc(t('myGrades'))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap">${mchip('grades')}${mchip('weights')}</div></div>
       <div class="card" style="margin-bottom:12px"><strong style="font-size:1.1rem">${esc(t('gradeTotal'))}: ${g.pct} ${esc(t('ofHundred'))}</strong>
         <span class="pill ${g.pct >= pass ? 'ok' : 'warn'}" style="margin-left:8px">${esc(g.pct >= pass ? t('passed') : t('notYet'))}</span>
@@ -1127,28 +1215,32 @@ function tabGrades(p, teacher) {
         <p class="muted" style="margin:8px 0 0;font-size:.85rem">${esc(t('goal'))}: ${pass} · ${g.total - g.graded} ${esc(t('pendingPts'))}</p></div>
       <div class="table-wrap"><table><thead><tr><th>${esc(t('activity'))}</th><th>${esc(t('weight'))}</th><th>${esc(t('status'))}</th><th>${esc(t('score'))}</th><th>${esc(t('contributes'))}</th><th>${esc(t('feedback'))}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }
-  const actIds = db.activities.filter((a) => a.projectId === p.id).map((a) => a.id);
-  const wsum = db.activities.filter((x) => x.projectId === p.id).reduce((n, x) => n + (x.weight || 0), 0);
-  const subs = db.submissions.filter((s) => actIds.includes(s.activityId));
-  const pending = subs.filter((s) => !evalFor(s)); const done = subs.filter((s) => evalFor(s));
-  const cur = subs.find((s) => s.id === ui.gradeSub && !evalFor(s)) || pending[0];
-  const label = (s) => { const a = db.activities.find((x) => x.id === s.activityId); const who = s.teamId ? t('teamOf') + ' ' + (db.teams.find((x) => x.id === s.teamId) || {}).name : person(s.authorId).name; return [L(a.title), who]; };
+  const acts = db.activities.filter((x) => x.projectId === p.id);
+  const wsum = Math.round(acts.reduce((n, x) => n + (x.weight || 0), 0) * 10) / 10;
+  const subs = db.submissions.filter((sb) => acts.some((x) => x.id === sb.activityId));
+  const actOf = (sb) => acts.find((x) => x.id === sb.activityId);
+  const pending = subs.filter((sb) => canGrade(actOf(sb), sb, u.id)); const done = subs.filter((sb) => evalBy(sb, u.id));
+  const cur = pending.find((sb) => sb.id === ui.gradeSub) || pending[0];
+  const label = (sb) => { const x = actOf(sb); const who = sb.teamId ? t('teamOf') + ' ' + (db.teams.find((y) => y.id === sb.teamId) || {}).name : person(sb.authorId).name; return [L(x.title), who]; };
   let formHtml = `<div class="empty">${esc(t('nothingToGrade'))}</div>`;
   if (cur) {
-    const [title, who] = label(cur);
+    const [title, who] = label(cur); const others = evalsOf(cur).filter((e) => e.evaluatorId !== u.id);
     formHtml = `<form class="card stack" data-form="grade" data-id="${esc(cur.id)}">
-      <div><div class="muted" style="font-size:.84rem">${esc(who)} · ${esc(rel(cur.submittedAt))}</div><h3 style="font-size:1.15rem">${esc(title)}</h3></div>
-      <div class="box">${subBody(cur)}${cur.linkUrl ? `<p><a href="${esc(cur.linkUrl)}" target="_blank" rel="noopener">${esc(cur.linkUrl)}</a></p>` : ''}</div>
+      <div><div class="muted" style="font-size:.84rem">${esc(who)} · ${esc(rel(cur.submittedAt))}</div><h3 style="font-size:1.15rem">${esc(title)}</h3>${gradedByNote(actOf(cur))}</div>
+      <div class="box">${videoEl(cur)}${subBody(cur)}${cur.linkUrl ? `<p><a href="${esc(cur.linkUrl)}" target="_blank" rel="noopener">${esc(cur.linkUrl)}</a></p>` : ''}</div>
+      ${others.length ? `<div class="box"><p><strong>${esc(t('otherEvals'))}</strong></p>${others.map((e) => `<p>${esc(person(e.evaluatorId).name)}: ${e.score}/10 · ${esc(e.feedback)}</p>`).join('')}</div>` : ''}
       <strong>${esc(t('rubric'))}</strong>
       ${RUBRIC.map((c, i) => `<label class="crit"><span>${esc(L(c))} <span class="muted">(0–${c.max})</span></span><input id="f-c${i}" name="c${i}" type="number" min="0" max="${c.max}" step="0.5" required value="${c.max}"></label>`).join('')}
       <label class="field"><span>${esc(t('feedback'))} *</span><textarea id="f-fb" name="feedback" required></textarea></label>
       <div><button class="btn" type="submit">${esc(t('publishGrade'))}</button></div></form>`;
   }
-  return `<div class="panel-h"><h2>${esc(t('tab_grades'))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="pill ${wsum === 100 ? 'ok' : 'warn'}">${esc(t('weightSum'))}: ${wsum} %${wsum === 100 ? '' : ' · ' + esc(t('weightWarn'))}</span>${mchip('grades')}${mchip('weights')}</div></div>
+  return `<div class="panel-h"><h2>${esc(t('tab_grades'))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="pill ${wsum === 100 ? 'ok' : 'warn'}">${esc(t('weightSum'))}: ${wsum} %${wsum === 100 ? '' : ' · ' + esc(t('weightWarn'))}</span>${mchip('grades')}${mchip('weights')}
+      <button class="btn small" data-act="form" data-form="gradecfg">${ic('pen')} ${esc(t('cfgBtn'))}</button></div></div>
+    ${ui.form === 'gradecfg' ? gradeCfgForm(p) : ''}
     <div class="grade-grid"><div><h3 style="font-size:1rem;margin-bottom:8px">${esc(t('toGrade'))} (${pending.length})</h3>
-      <ul class="queue">${pending.map((s) => { const [ti, who] = label(s); return `<li><button data-act="gradeSub" data-id="${esc(s.id)}" aria-current="${cur && s.id === cur.id}"><strong>${esc(who)}</strong><span class="s">${esc(ti)}</span></button></li>`; }).join('') || `<li class="muted">—</li>`}</ul>
+      <ul class="queue">${pending.map((sb) => { const [ti, who] = label(sb); return `<li><button data-act="gradeSub" data-id="${esc(sb.id)}" aria-current="${cur && sb.id === cur.id}"><strong>${esc(who)}</strong><span class="s">${esc(ti)}</span></button></li>`; }).join('') || `<li class="muted">—</li>`}</ul>
       <h3 style="font-size:1rem;margin:16px 0 8px">${esc(t('graded'))} (${done.length})</h3>
-      <ul class="queue">${done.map((s) => { const [ti, who] = label(s); return `<li class="card" style="padding:8px 12px"><strong>${esc(who)}</strong> · ${evalFor(s).score}/10<div class="muted" style="font-size:.8rem">${esc(ti)}</div></li>`; }).join('')}</ul>
+      <ul class="queue">${done.map((sb) => { const [ti, who] = label(sb); return `<li class="card" style="padding:8px 12px"><strong>${esc(who)}</strong> · ${evalBy(sb, u.id).score}/10<div class="muted" style="font-size:.8rem">${esc(ti)}</div></li>`; }).join('')}</ul>
     </div><div style="min-width:0">${formHtml}</div></div>`;
 }
 
@@ -1225,8 +1317,8 @@ function tabWall(p, teacher) {
     const a = person(s.authorId); const cms = db.comments.filter((c) => c.targetId === s.id).sort(byDate('at')); const likes = s.likes || []; const liked = likes.includes(u.id);
     const play = `<span>${ic('play')}</span>`;
     return `<article class="wcard">
-      <div class="post-head">${avatar(a)}<div style="min-width:0"><strong>${esc(inst(a.institutionId).short)}. ${esc(a.name)}</strong><div class="muted" style="font-size:.78rem">${esc(rel(s.submittedAt))}</div></div></div>
-      ${s.linkUrl ? `<a class="vid" href="${esc(s.linkUrl)}" target="_blank" rel="noopener" aria-label="${esc(t('watch'))}">${play}</a>` : `<div class="vid">${play}</div>`}
+      <div class="post-head">${avatar(a)}<div style="min-width:0"><strong>${esc(s.title || inst(a.institutionId).short + '. ' + a.name)}</strong><div class="muted" style="font-size:.78rem">${esc(a.name)} · ${esc(rel(s.submittedAt))}</div></div></div>
+      ${s.videoId ? videoEl(s) : s.linkUrl ? `<a class="vid" href="${esc(s.linkUrl)}" target="_blank" rel="noopener" aria-label="${esc(t('watch'))}">${play}</a>` : `<div class="vid">${play}</div>`}
       <div class="post-body" style="margin:0">${esc(s.body)}</div>
       <div class="wact"><button class="like ${liked ? 'on' : ''}" data-act="like" data-id="${esc(s.id)}" aria-pressed="${liked}" aria-label="${esc(t('like'))}">${ic('heart')} ${likes.length}</button><span class="muted">${cms.length} ${esc(t('comments'))}</span></div>
       <div class="cmts">${cms.map((c) => { const ca = person(c.authorId); return `<div class="cmt"><b>${esc(ca.name)}</b> ${instChip(ca.institutionId)} ${esc(c.body)}</div>`; }).join('')}
@@ -1269,7 +1361,7 @@ function planBody(p) {
   }).join('');
   const acts = db.activities.filter((a) => a.projectId === p.id).sort(byDate('due'));
   const sum = acts.reduce((n, a) => n + (a.weight || 0), 0);
-  const sched = acts.map((a) => `<tr><td>${a.phase} · ${esc(L(PHASES[a.phase]))}</td><td>${esc(L(a.title))}</td><td>${esc(fmt(a.due, me().tz, { day: 'numeric', month: 'short', year: 'numeric' }))}</td><td>${a.weight ? a.weight + ' %' : '—'}</td><td>${esc(deliveryOf(a))}</td><td>${esc(t('mode_' + a.mode))}</td></tr>`).join('');
+  const sched = acts.map((a) => `<tr><td>${a.phase} · ${esc(L(PHASES[a.phase]))}</td><td>${esc(L(a.title))}</td><td>${esc(fmt(a.due, me().tz, { day: 'numeric', month: 'short', year: 'numeric' }))}</td><td>${a.weight ? a.weight + ' %' : '—'}</td><td>${esc(deliveryOf(a))}</td><td>${esc(t('mode_' + a.mode))}</td><td>${esc(a.weight ? graderLabel(a) : '—')}</td></tr>`).join('');
   const toolRows = ['content', 'meet', 'chat', 'collab'].map((k) => { const x = tools[k] || {};
     return `<tr><td>${esc(t('purp_' + k))}</td><td>${esc(x.tool || '—')}</td><td>${x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.url)}</a>` : '—'}</td></tr>`; }).join('');
   return `<div class="plan">
@@ -1281,8 +1373,8 @@ function planBody(p) {
     <h3>${esc(t('objectives'))}</h3><p style="white-space:pre-wrap">${esc(plan.objectives || '—')}</p>
     <h3>${esc(t('ods'))}</h3>${list((plan.ods || []).map((n) => n + '. ' + (ods[n - 1] || '')))}
     <h3>${esc(t('strategy'))}</h3>${list((plan.strategy || []).map((k) => t('strat_' + k)))}
-    <h3>${esc(t('schedule'))}</h3><div class="table-wrap"><table><thead><tr><th>${esc(t('phase'))}</th><th>${esc(t('activity'))}</th><th>${esc(t('dueShort'))}</th><th>${esc(t('weight'))}</th><th>${esc(t('delivery'))}</th><th>${esc(t('mode'))}</th></tr></thead><tbody>${sched}
-      <tr><td colspan="3"><strong>${esc(t('total'))}</strong></td><td colspan="3"><strong>${sum} %</strong>${sum !== 100 ? ` · ${esc(t('weightWarn'))}` : ''}</td></tr></tbody></table></div>
+    <h3>${esc(t('schedule'))}</h3><div class="table-wrap"><table><thead><tr><th>${esc(t('phase'))}</th><th>${esc(t('activity'))}</th><th>${esc(t('dueShort'))}</th><th>${esc(t('weight'))}</th><th>${esc(t('delivery'))}</th><th>${esc(t('mode'))}</th><th>${esc(t('gradedBy'))}</th></tr></thead><tbody>${sched}
+      <tr><td colspan="3"><strong>${esc(t('total'))}</strong></td><td colspan="4"><strong>${sum} %</strong>${sum !== 100 ? ` · ${esc(t('weightWarn'))}` : ''}</td></tr></tbody></table></div>
     <h3>${esc(t('toolsTitle'))}</h3><div class="table-wrap"><table><thead><tr><th>${esc(t('purpose'))}</th><th>${esc(t('tool'))}</th><th>URL</th></tr></thead><tbody>${toolRows}</tbody></table></div>
     <h3>${esc(t('passRuleTitle'))}</h3><p>${esc(t('passRule'))} <strong>${passPct(p.id)}</strong>${esc(t('passRule2'))}</p></div>`;
 }
@@ -1318,8 +1410,8 @@ function reportData(p) {
   const pass = passPct(p.id);
   const studs = studentsOf(p.id).map((m) => { const pp = person(m.personId); const g = gradeOf(p.id, pp.id); const tm = db.teams.find((x) => x.id === m.teamId); return { m, pp, g, team: tm ? tm.name : '—', ok: g.pct >= pass }; });
   const acts = db.activities.filter((a) => a.projectId === p.id && a.weight > 0).sort(byDate('due'));
-  const rows = acts.map((a) => { const subs = db.submissions.filter((s) => s.activityId === a.id); const evs = subs.map((s) => evalFor(s)).filter(Boolean);
-    return { a, received: subs.length, expected: a.mode === 'team' ? teamsOf(p.id).length : studs.length, graded: evs.length, avg: evs.length ? evs.reduce((n, e) => n + e.score, 0) / evs.length : null }; });
+  const rows = acts.map((a) => { const subs = db.submissions.filter((s) => s.activityId === a.id); const evs = subs.flatMap((s) => evalsOf(s));
+    return { a, received: subs.length, expected: a.mode === 'team' ? teamsOf(p.id).length : studs.length, graded: subs.filter((sb) => evalsOf(sb).length).length, avg: evs.length ? evs.reduce((n, e) => n + e.score, 0) / evs.length : null }; });
   return { pass, studs, acts, rows, ok: studs.filter((x) => x.ok).length, badges: studs.filter((x) => x.m.badgeAt).length };
 }
 const SUMMARY = {
@@ -1335,7 +1427,7 @@ function reportBody(p) {
     <h3>${esc(t('tab_activities'))}</h3><div class="table-wrap"><table><thead><tr><th>${esc(t('activity'))}</th><th>${esc(t('weight'))}</th><th>${esc(t('received'))}</th><th>${esc(t('graded'))}</th><th>${esc(t('avg'))}</th></tr></thead><tbody>
       ${d.rows.map((r) => `<tr><td>${esc(L(r.a.title))}</td><td>${r.a.weight} %</td><td>${r.received}/${r.expected}</td><td>${r.graded}</td><td>${r.avg == null ? '—' : r.avg.toFixed(1) + '/10'}</td></tr>`).join('')}</tbody></table></div>
     <h3>${esc(t('evidence'))}</h3>${evid.map((a) => `<p><strong>${esc(L(a.title))}</strong></p><ul>${db.submissions.filter((s) => s.activityId === a.id).map((s) => { const pp = person(s.authorId);
-      return `<li>${esc(inst(pp.institutionId).short)}. ${esc(pp.name)}${s.linkUrl ? ` · <a href="${esc(s.linkUrl)}" target="_blank" rel="noopener">${esc(s.linkUrl)}</a>` : ''}</li>`; }).join('') || '<li>—</li>'}</ul>`).join('') || '<p>—</p>'}</div>`;
+      return `<li>${esc(inst(pp.institutionId).short)}. ${esc(pp.name)}${s.videoId ? ` · ${esc(t('hostedVideo'))}${s.videoMeta ? ' (' + esc(fmtDur(s.videoMeta.dur)) + ')' : ''}` : s.linkUrl ? ` · <a href="${esc(s.linkUrl)}" target="_blank" rel="noopener">${esc(s.linkUrl)}</a>` : ''}</li>`; }).join('') || '<li>—</li>'}</ul>`).join('') || '<p>—</p>'}</div>`;
 }
 function tabReport(p) {
   return `<div class="panel-h"><h2>${esc(t('reportTitle'))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${mchip('report')}
@@ -1347,8 +1439,36 @@ function gradesCsv(p) {
   const d = reportData(p); const q = (v) => { let s = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
   const head = [t('student'), 'Email', t('institution'), t('team')].concat(d.acts.map((a) => `${L(a.title)} (${a.weight}%)`), [`${t('gradeTotal')} (${t('ofHundred')})`, t('status'), t('badge')]);
   const rows = d.studs.map((x) => [x.pp.name, x.pp.email, inst(x.pp.institutionId).short, x.team]
-    .concat(d.acts.map((a) => { const ev = evalFor(subFor(a, x.pp.id)); return ev ? ev.score : ''; }), [x.g.pct, x.ok ? t('passed') : t('notYet'), x.m.badgeAt ? x.m.badgeAt.slice(0, 10) : '']));
+    .concat(d.acts.map((a) => { const sc = scoreOf(a, x.pp.id); return sc == null ? '' : Math.round(sc * 10) / 10; }), [x.g.pct, x.ok ? t('passed') : t('notYet'), x.m.badgeAt ? x.m.badgeAt.slice(0, 10) : '']));
   return [head].concat(rows).map((r) => r.map(q).join(',')).join('\r\n');
+}
+
+/* ---------- Configuración de calificación y de enlaces ---------- */
+function gradeCfgForm(p) {
+  const acts = db.activities.filter((a) => a.projectId === p.id && a.kind === 'task').sort(byDate('due'));
+  const sum = acts.reduce((n, a) => n + (a.weight || 0), 0);
+  return `<form class="card stack" data-form="gradeCfg" style="margin-bottom:16px">
+    <p class="muted" style="margin:0;font-size:.88rem">${esc(t('cfgHelp'))}</p>
+    <div class="table-wrap"><table><thead><tr><th>${esc(t('activity'))}</th><th>${esc(t('weight'))} (%)</th><th>${esc(t('gradedBy'))}</th><th>${esc(t('minComments'))}</th><th>${esc(t('videoMax'))}</th></tr></thead><tbody>
+    ${acts.map((a) => `<tr><td>${esc(L(a.title))}</td>
+      <td><input id="f-w-${esc(a.id)}" name="w_${esc(a.id)}" type="number" min="0" max="100" step="0.5" value="${a.weight || 0}" data-wsum style="width:84px"></td>
+      <td><select id="f-gm-${esc(a.id)}" name="gm_${esc(a.id)}">${gradeOptions(p, a.grading)}</select></td>
+      <td>${a.wall ? `<input id="f-mc-${esc(a.id)}" name="mc_${esc(a.id)}" type="number" min="0" max="10" value="${a.minComments || 0}" style="width:70px">` : '—'}</td>
+      <td>${a.wall ? `<input id="f-vm-${esc(a.id)}" name="vm_${esc(a.id)}" type="number" min="0.5" max="30" step="0.5" value="${a.videoMax || 3}" style="width:70px">` : '—'}</td></tr>`).join('')}
+    </tbody></table></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><strong>${esc(t('weightSum'))}: <span id="wsum-live">${sum}</span> %</strong>
+      <span id="wsum-warn" class="pill warn" ${sum === 100 ? 'hidden' : ''}>${esc(t('weightWarn'))}</span>
+      <label class="field" style="grid-auto-flow:column;align-items:center;gap:8px;margin-left:auto"><span>${esc(t('passPct'))}</span><input id="f-cfg-pass" name="passPct" type="number" min="1" max="100" value="${passPct(p.id)}" style="width:80px"></label></div>
+    <div style="display:flex;gap:8px"><button class="btn" type="submit">${esc(t('save'))}</button><button class="btn ghost" type="button" data-act="form" data-form="gradecfg">${esc(t('cancel'))}</button></div></form>`;
+}
+function linksForm(p) {
+  const links = p.links || []; const n = Math.max(4, links.length + 1);
+  return `<form class="card stack" data-form="links" style="margin-top:12px"><p class="muted" style="margin:0;font-size:.88rem">${esc(t('meetLinkHelp'))}</p>
+    <datalist id="dl-tools"><option value="Microsoft Teams"></option><option value="Zoom"></option><option value="Google Meet"></option><option value="Cisco Webex"></option><option value="Google Drive"></option><option value="OneDrive"></option></datalist>
+    ${Array.from({ length: n }, (_, i) => { const l = links[i] || { label: '', url: '' };
+      return `<div class="row"><label class="field"><span>${esc(t('linkLabel'))}</span><input id="f-ln-l${i}" name="label${i}" type="text" list="dl-tools" value="${esc(l.label)}"></label>
+        <label class="field"><span>URL</span><input id="f-ln-u${i}" name="url${i}" type="url" placeholder="https://" value="${esc(l.url)}"></label></div>`; }).join('')}
+    <div style="display:flex;gap:8px"><button class="btn" type="submit">${esc(t('save'))}</button><button class="btn ghost" type="button" data-act="form" data-form="links">${esc(t('cancel'))}</button></div></form>`;
 }
 
 function modal() {
@@ -1356,6 +1476,27 @@ function modal() {
     return `<div class="overlay" data-act="modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title" data-stop>
       <h2 id="m-title">${esc(t('reset'))}</h2><p>${esc(t('resetQ'))}</p>
       <div class="modal-acts"><button class="btn ghost" data-act="modal">${esc(t('cancel'))}</button><button class="btn" data-act="doReset">${esc(t('resetYes'))}</button></div></div></div>`;
+  }
+  if (ui.modal === 'composer') {
+    const a = compAct(); if (!a) return '';
+    const u = me(); const tm = db.teams.find((x) => x.id === teamIdOf(a.projectId, u.id));
+    return `<div class="overlay" data-act="modal"><div class="modal composer" role="dialog" aria-modal="true" aria-labelledby="m-title" data-stop>
+      <h2 id="m-title">${esc(t('composerTitle'))}</h2>
+      <p class="muted" style="margin:0 0 10px;font-size:.88rem">${esc(L(a.title))} · ${esc(t('maxLabel'))} ${a.videoMax || 3} min · ${VIDEO_MAX_MB} MB</p>
+      <div style="display:grid;gap:10px">
+        <label class="field"><span>${esc(t('subject'))}</span><input id="f-c-title" type="text" maxlength="120" value="${esc(inst(u.institutionId).short + '. ' + u.name)}"></label>
+        <div class="dropzone">
+          <div class="dz-btns"><button type="button" class="btn ghost" data-comp="pick">${ic('plus')} ${esc(t('uploadVideo'))}</button><button type="button" class="btn ghost" data-comp="rec">${ic('video')} ${esc(t('recordVideo'))}</button><button type="button" class="btn ghost" id="c-remove" data-comp="remove" hidden>${esc(t('removeVideo'))}</button></div>
+          <input id="f-c-file" type="file" accept="video/*" hidden>
+          <video id="c-live" class="vplayer" muted playsinline hidden></video>
+          <div id="c-reccontrols" class="rec" hidden><button type="button" class="btn" data-comp="stop">${esc(t('stopRec'))}</button><span id="c-timer" class="wc">0:00</span></div>
+          <video id="c-preview" class="vplayer" controls playsinline hidden></video>
+          <div id="c-meta" class="muted" style="font-size:.85rem"></div><div id="c-msg" role="alert" class="cmsg"></div>
+        </div>
+        <label class="field"><span class="sr">${esc(t('writeSomething'))}</span><textarea id="f-c-body" placeholder="${esc(t('writeSomething'))}"></textarea></label>
+        <div class="modal-acts" style="justify-content:space-between;align-items:center"><span class="pill info">${esc(tm ? t('teamOf') + ' ' + tm.name : t('noTeam'))}</span>
+          <span style="display:flex;gap:8px"><button type="button" class="btn ghost" data-act="modal">${esc(t('cancel'))}</button><button type="button" class="btn" id="c-publish" data-comp="publish" disabled>${esc(t('post'))}</button></span></div>
+      </div></div></div>`;
   }
   if (ui.modal === 'newProject') {
     const today = new Date().toISOString().slice(0, 10); const later = new Date(Date.now() + 70 * DAY).toISOString().slice(0, 10);
@@ -1379,6 +1520,110 @@ function modal() {
 }
 
 /* =====================================================================
+   Videos alojados en la plataforma
+   Prototipo: el archivo se guarda en el navegador (IndexedDB) y no sale del equipo.
+   Producción: se sube al servidor (POST /api/v1/media) y la entrega guarda su media_id.
+   ===================================================================== */
+const VIDEO_MAX_MB = 200;
+const idb = (() => {
+  let p;
+  const open = () => p || (p = new Promise((res, rej) => { const r = indexedDB.open('aula-coil-videos', 1); r.onupgradeneeded = () => r.result.createObjectStore('v'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const run = (mode, fn) => open().then((d) => new Promise((res, rej) => { const tx = d.transaction('v', mode); const rq = fn(tx.objectStore('v')); tx.oncomplete = () => res(rq && rq.result); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error); }));
+  return { put: (k, b) => run('readwrite', (s) => s.put(b, k)), get: (k) => run('readonly', (s) => s.get(k)), del: (k) => run('readwrite', (s) => s.delete(k)), clear: () => run('readwrite', (s) => s.clear()) };
+})();
+const vurls = new Map();
+const fmtDur = (s) => { if (s == null || !isFinite(s)) return '—'; const r = Math.round(s); return Math.floor(r / 60) + ':' + String(r % 60).padStart(2, '0'); };
+const fmtSize = (b) => (b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB');
+function resetVideos() { vurls.forEach((u) => URL.revokeObjectURL(u)); vurls.clear(); idb.clear().catch(() => {}); }
+function videoEl(s) {
+  if (!s.videoId) return '';
+  return `<video class="vplayer" data-vid="${esc(s.videoId)}" controls preload="metadata" playsinline aria-label="${esc(s.title || '')}"></video>
+    <div class="muted" style="font-size:.78rem">${s.videoMeta ? esc(fmtDur(s.videoMeta.dur) + ' · ' + fmtSize(s.videoMeta.size)) : ''}</div>`;
+}
+function hydrateVideos() {
+  document.querySelectorAll('video[data-vid]').forEach((el) => {
+    const id = el.dataset.vid; if (el.getAttribute('src')) return;
+    if (vurls.has(id)) { el.src = vurls.get(id); return; }
+    idb.get(id).then((blob) => { if (!blob) throw new Error('missing'); const u = URL.createObjectURL(blob); vurls.set(id, u); el.src = u; })
+      .catch(() => { const m = document.createElement('div'); m.className = 'vid-miss'; m.textContent = t('videoMissing'); el.replaceWith(m); });
+  });
+}
+const composerBtn = (a, s) => `<div><button class="btn" data-act="composer" data-id="${esc(a.id)}">${ic('video')} ${esc(s ? t('replaceVideo') : t('publishVideo'))}</button></div>`;
+
+let composer = { blob: null };
+const $c = (id) => document.getElementById(id);
+const compAct = () => db.activities.find((x) => x.id === ui.composerAct);
+function compMsg(text, bad) { const m = $c('c-msg'); if (m) { m.textContent = text || ''; m.className = bad ? 'cmsg bad' : 'cmsg'; } }
+function stopStream() {
+  if (composer.timer) clearInterval(composer.timer); composer.timer = null;
+  if (composer.stream) composer.stream.getTracks().forEach((x) => x.stop()); composer.stream = null;
+  const l = $c('c-live'); if (l) { l.srcObject = null; l.hidden = true; } const rc = $c('c-reccontrols'); if (rc) rc.hidden = true;
+}
+function closeComposerMedia() {
+  if (composer.rec && composer.rec.state !== 'inactive') { composer.rec.onstop = null; try { composer.rec.stop(); } catch (e) { /* ya detenido */ } }
+  stopStream(); if (composer.url) URL.revokeObjectURL(composer.url); composer = { blob: null };
+}
+function paintComposer() {
+  const pv = $c('c-preview'); if (!pv) return; const pub = $c('c-publish');
+  if (composer.blob) {
+    if (!composer.url) composer.url = URL.createObjectURL(composer.blob);
+    pv.src = composer.url; pv.hidden = false; $c('c-meta').textContent = `${composer.name} · ${fmtDur(composer.dur)} · ${fmtSize(composer.size)}`; $c('c-remove').hidden = false; pub.disabled = false;
+  } else { pv.hidden = true; pv.removeAttribute('src'); $c('c-meta').textContent = ''; $c('c-remove').hidden = true; pub.disabled = true; }
+}
+function probeDuration(blob) {
+  return new Promise((res) => {
+    const v = document.createElement('video'); v.preload = 'metadata'; const u = URL.createObjectURL(blob);
+    const done = (d) => { URL.revokeObjectURL(u); res(d); };
+    const timer = setTimeout(() => done(null), 5000);
+    v.onloadedmetadata = () => { if (isFinite(v.duration)) { clearTimeout(timer); return done(v.duration); }
+      v.ontimeupdate = () => { v.ontimeupdate = null; clearTimeout(timer); done(isFinite(v.duration) ? v.duration : null); }; v.currentTime = 1e6; };
+    v.onerror = () => { clearTimeout(timer); done(null); }; v.src = u;
+  });
+}
+async function setComposerBlob(blob, name, dur) {
+  const a = compAct(); const max = ((a && a.videoMax) || 3) * 60;
+  if (blob.size > VIDEO_MAX_MB * 1048576) { compMsg(`${t('videoTooBig')} (${VIDEO_MAX_MB} MB)`, true); return; }
+  if (dur == null) dur = await probeDuration(blob);
+  if (dur != null && dur > max + 2) { compMsg(`${t('videoTooLong')}: ${fmtDur(dur)} > ${fmtDur(max)}`, true); return; }
+  if (composer.url) URL.revokeObjectURL(composer.url);
+  composer.blob = blob; composer.name = name; composer.dur = dur; composer.size = blob.size; composer.url = null; compMsg(''); paintComposer();
+}
+function acceptFile(file) {
+  if (!/^video\//.test(file.type) && !/\.(mp4|mov|webm|m4v|mkv)$/i.test(file.name)) { compMsg(t('notVideo'), true); return; }
+  setComposerBlob(file, file.name, null);
+}
+async function startRec() {
+  const a = compAct(); const max = ((a && a.videoMax) || 3) * 60;
+  try { composer.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true }); } catch (e) { compMsg(t('camFail'), true); return; }
+  const live = $c('c-live'); if (!live) { stopStream(); return; }
+  live.srcObject = composer.stream; live.hidden = false; live.play().catch(() => {});
+  const mime = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'].find((m) => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || '';
+  composer.chunks = []; composer.rec = new MediaRecorder(composer.stream, mime ? { mimeType: mime } : undefined);
+  composer.rec.ondataavailable = (e) => { if (e.data && e.data.size) composer.chunks.push(e.data); };
+  composer.rec.onstop = () => {
+    const dur = (Date.now() - composer.startAt) / 1000; const blob = new Blob(composer.chunks, { type: composer.rec.mimeType || 'video/webm' });
+    stopStream(); setComposerBlob(blob, 'grabacion.' + (/mp4/.test(blob.type) ? 'mp4' : 'webm'), dur);
+  };
+  composer.startAt = Date.now(); composer.rec.start(500); compMsg('');
+  $c('c-reccontrols').hidden = false; $c('c-preview').hidden = true;
+  composer.timer = setInterval(() => { const el = (Date.now() - composer.startAt) / 1000; const tm = $c('c-timer'); if (tm) tm.textContent = fmtDur(el); if (el >= max && composer.rec.state === 'recording') composer.rec.stop(); }, 250);
+}
+function stopRec() { if (composer.rec && composer.rec.state === 'recording') composer.rec.stop(); }
+async function publishComposer() {
+  const a = compAct(); const u = me(); const c = composer; if (!a || !c.blob) return;
+  const btn = $c('c-publish'); btn.disabled = true;
+  const title = ($c('f-c-title').value || '').trim() || (inst(u.institutionId).short + '. ' + u.name); const body = ($c('f-c-body').value || '').trim();
+  const id = uid('v');
+  try { await idb.put(id, c.blob); } catch (e) { compMsg(t('videoSaveFail'), true); btn.disabled = false; return; }
+  const prev = subFor(a, u.id);
+  const data = { title, body, linkUrl: '', videoId: id, videoMeta: { name: c.name, size: c.size, dur: c.dur, type: c.blob.type }, submittedAt: new Date().toISOString(), authorId: u.id };
+  if (prev) { if (prev.videoId) { idb.del(prev.videoId).catch(() => {}); if (vurls.has(prev.videoId)) { URL.revokeObjectURL(vurls.get(prev.videoId)); vurls.delete(prev.videoId); } } Object.assign(prev, data); }
+  else db.submissions.push(Object.assign({ id: uid('sb'), activityId: a.id, teamId: a.mode === 'team' ? teamIdOf(a.projectId, u.id) : null, likes: [] }, data));
+  closeComposerMedia(); Object.assign(ui, { modal: null, tab: 'wall', wallAct: a.id }); toast(t('t_sub')); render();
+}
+function afterRender() { hydrateVideos(); if (ui.modal === 'composer') paintComposer(); else if (composer.blob || composer.stream || composer.rec) closeComposerMedia(); }
+
+/* =====================================================================
    7. RENDER Y EVENTOS (delegación: un solo listener por tipo)
    ===================================================================== */
 const $app = document.getElementById('app');
@@ -1387,6 +1632,7 @@ function render() {
   const body = ui.view === 'project' ? viewProject() : ui.view === 'calendar' ? viewCalendar() : viewHome();
   $app.innerHTML = header() + body + modal();
   save();
+  afterRender();
 }
 let toastTimer;
 function toast(msg) { const el = document.getElementById('toast'); el.textContent = msg; el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, 2600); }
@@ -1411,8 +1657,15 @@ document.addEventListener('submit', (e) => {
   if ([...form.querySelectorAll('[required]')].some((x) => !String(f[x.name] || '').trim())) { toast(t('need')); return; }
   if (actions[form.dataset.form](f, form) !== false) render();
 });
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-comp]'); if (!el) return; e.preventDefault();
+  ({ pick: () => $c('f-c-file').click(), rec: startRec, stop: stopRec, publish: publishComposer, remove: () => { if (composer.url) URL.revokeObjectURL(composer.url); composer.blob = null; composer.url = null; compMsg(''); paintComposer(); } })[el.dataset.comp]();
+});
+document.addEventListener('change', (e) => { if (e.target && e.target.id === 'f-c-file' && e.target.files[0]) { acceptFile(e.target.files[0]); e.target.value = ''; } });
 document.addEventListener('input', (e) => {
-  const el = e.target; if (!el.matches || !el.matches('textarea[data-max]')) return;
+  const el = e.target; if (!el.matches) return;
+  if (el.matches('input[data-wsum]')) { const f = el.closest('form'); const sum = Math.round([...f.querySelectorAll('input[data-wsum]')].reduce((n, x) => n + (+x.value || 0), 0) * 10) / 10; f.querySelector('#wsum-live').textContent = sum; f.querySelector('#wsum-warn').hidden = sum === 100; return; }
+  if (!el.matches('textarea[data-max]')) return;
   const n = words(el.value); const c = document.querySelector(`[data-count="${el.id}"]`);
   if (c) { c.textContent = n + ' / ' + el.dataset.max; c.classList.toggle('over', n > +el.dataset.max); }
 });

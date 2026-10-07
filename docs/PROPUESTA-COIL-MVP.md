@@ -85,7 +85,7 @@ Solo si no es posible usar Moodle EPN (políticas, versión antigua sin LTI 1.3,
 - **Módulo LTI 1.3 como herramienta**, para que más adelante Moodle u otro LMS la lancen (ver D).
 - **Despliegue:** un contenedor + la base. Sin microservicios, colas ni Kubernetes.
 
-### A.4 Modelo de datos mínimo (14 tablas)
+### A.4 Modelo de datos mínimo (15 tablas)
 
 Sirve para las dos rutas: en la Ruta 1 es el **modelo de dominio** (cada tabla corresponde a tablas de Moodle; ver comentarios `Moodle:` en el SQL); en la Ruta 2 es el **esquema real**.
 
@@ -111,12 +111,13 @@ institution 1─* person 1─* project_member *─1 project
 | `submission` | Entregas | Una fila por equipo o por persona (índices únicos parciales) |
 | `evaluation` | Nota + rúbrica + retroalimentación | Separada de la entrega para permitir coevaluación más adelante |
 | `comment`, `submission_like` | Comentarios y reacciones del muro | Cuelgan de `submission`; sirven también para exigir comentarios mínimos |
+| `media` | Videos alojados en la plataforma | Guarda tipo, tamaño, duración y la ruta en el almacenamiento; `deleted_at` permite aplicar una política de retención |
 | `reflection` | Diario intercultural | Una por fase; visibilidad privada / docentes / equipo |
 | `post` | Foro | `team_id` nulo = canal general; `lang` permite ofrecer "Traducir" |
 | `resource` | Materiales | Enlaces con idioma |
 | `domain_event` | Eventos para integraciones | Patrón *outbox*: base para webhooks y devolución de notas |
 
-El **progreso** y la **nota ponderada** no se almacenan: se calculan (vistas `student_progress` y `student_grade`). Así no se desincronizan. El esquema tiene ahora 14 tablas y 2 vistas.
+El **progreso** y la **nota ponderada** no se almacenan: se calculan (vistas `student_progress` y `student_grade`). Así no se desincronizan. El esquema tiene ahora 15 tablas y 2 vistas.
 
 Diagrama ER editable: *"COIL MVP - Modelo de datos"* en el [tablero FigJam](https://www.figma.com/board/H4PMfd2USrRdSqSxnSOyY5).
 
@@ -234,9 +235,28 @@ Se revisaron el plan de colaboración, el modelo de reporte y el documento de ev
 | Documento de evidencias con resumen, participantes y capturas | Pestaña **Informe** (docente): resumen automático, participantes con nota, actividades con promedio, enlaces a los videos; descarga en Word y notas en CSV |
 | Ambas universidades hispanohablantes (Quito y Chihuahua) | Los datos de ejemplo pasan a español y a una hora de diferencia; el soporte ES/EN se mantiene para futuros socios |
 
-**Pendiente de confirmar con el ingeniero:** quién emite la insignia (EPN o el programa), quién califica cada actividad (cada docente a los suyos o entre ambos), si los videos pueden alojarse en la plataforma y qué consentimiento de imagen existe.
+**Pendiente de confirmar con el ingeniero:** quién emite la insignia (la EPN o el programa) y quién aloja y mantiene la plataforma (con el contacto de TI para el subdominio).
 
 **No subir al repositorio** los documentos originales del programa: incluyen datos de contacto y claves de acceso de los tableros.
+
+### C.2 Decisiones tomadas después de la primera revisión
+
+| Decisión | Cómo quedó en el prototipo y el modelo de datos |
+|---|---|
+| **Quién califica es configurable por actividad.** Puede calificar un solo docente (incluso alternando entre actividades), ambos, o cada uno a los suyos | `activity.grading`: `own` (cada docente a los estudiantes de su institución), `both` (promedio de ambos) o `one` (un docente designado). Si falta la evaluación de un docente en modo `both`, el estudiante ve "Calificación parcial" |
+| **Las ponderaciones las escribe el docente** en una casilla por actividad | Botón **Configurar calificación** en la pestaña Calificaciones: peso, quién califica, comentarios mínimos, duración máxima del video y porcentaje de aprobación. La suma se recalcula al escribir y avisa si no es 100 % |
+| **La plataforma reemplaza a Padlet y los videos se alojan en ella** | El estudiante **sube un archivo o graba con la cámara** desde el compositor (asunto, video, texto, equipo), igual que en Padlet. Se valida el tipo, el tamaño (máx. 200 MB) y la duración máxima. En el prototipo el archivo queda en el navegador; en producción se sube al servidor y la entrega guarda su `media_id` |
+| **Los enlaces de reunión son libres** | Cada proyecto tiene una lista de enlaces con nombre (Teams, Zoom, Google Meet, Webex u otra herramienta). Cada sesión puede tener su propio enlace; si no, usa el primero de la lista. Solo se aceptan enlaces `http(s)` |
+| **Universidades hispanohablantes o de cualquier idioma** | La interfaz funciona en ES y EN; agregar un idioma consiste en copiar un bloque de textos. Cada persona tiene su idioma y su zona horaria |
+| **Consentimiento de imagen** | Se da por resuelto para la demostración del prototipo. Para el piloto con estudiantes reales, solicitar a la EPN el formato vigente y definir cuánto tiempo se conservan los videos |
+
+#### Alojar videos: lo que cambia en la infraestructura
+
+- **Espacio.** Un video de 3 minutos ocupa entre unos 60 MB (720p) y 180 MB (1080p). Con 100 estudiantes y 2 videos cada uno, son **entre 10 y 40 GB por semestre**. Conviene fijar un máximo por archivo (200 MB en el prototipo) y pedir 720p.
+- **Formato.** Los celulares graban en formatos que no todos los navegadores reproducen. En el servidor se convierte a **MP4 (H.264)** con ffmpeg y se genera una miniatura.
+- **En Moodle (Ruta 1).** Los archivos van a `moodledata`. Hay que subir los límites de PHP (`upload_max_filesize`, `post_max_size`) y el tamaño máximo de subida del curso, y entregar archivos grandes con el servidor web (`X-Sendfile` o `X-Accel-Redirect`) para no recargar PHP.
+- **Retención y privacidad.** Definir cuántos meses se conservan los videos y borrarlos después (`media.deleted_at`). Los videos muestran el rostro de estudiantes, así que deben verlos solo los participantes del proyecto.
+- **Copias de seguridad.** Incluir el almacenamiento de archivos, no solo la base de datos.
 
 ---
 
@@ -309,7 +329,9 @@ Puerto "LmsAdapter"
 - [ ] Zonas horarias: perfiles de usuarios socios con su zona (p. ej. `Europe/Amsterdam`); una fecha de prueba se ve bien en ambos lados.
 - [ ] Paquetes de idioma ES y EN instalados; filtro multilenguaje activo.
 - [ ] Correo saliente (SMTP) y cron funcionando: llegan los recordatorios de entrega.
-- [ ] Copias de seguridad del curso programadas.
+- [ ] Copias de seguridad del curso programadas, incluyendo los archivos (videos).
+- [ ] Subida de videos probada con un archivo de 150 MB desde un celular; reproducción en Chrome, Safari y móvil.
+- [ ] Espacio en disco calculado (10–40 GB por semestre para 100 estudiantes) y política de retención definida.
 - [ ] Prueba con 2 navegadores y 1 móvil por lado; tiempo de carga del aula menor a 3 s.
 
 ### E.2 Funcional (recorrido completo por rol)

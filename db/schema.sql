@@ -46,8 +46,7 @@ create table project (                -- Moodle: mdl_course dentro de la categor
   pass_pct      smallint not null default 70 check (pass_pct between 1 and 100), -- % mínimo para aprobar y recibir insignia
   plan          jsonb not null default '{}',  -- plan de colaboración: objectives, ods[], strategy[], tools{}, inst{<id>: {schedule, semStart, semEnd, breaks}}
   status        text not null default 'draft' check (status in ('draft','active','closed')),
-  meet_url      text,                 -- integración opcional Zoom/Teams
-  drive_url     text,                 -- integración opcional Drive/OneDrive
+  links         jsonb not null default '[]',  -- enlaces configurables: [{"label":"Google Meet","url":"https://..."}] (Teams, Zoom, Meet, Webex, Drive...)
   external_ref  jsonb not null default '{}',
   check (ends_on > starts_on)
 );
@@ -77,7 +76,10 @@ create table activity (               -- Moodle: mdl_assign (task, reflection) /
   title         jsonb not null,
   instructions  text not null default '',
   due_at        timestamptz not null, -- UTC
-  weight        numeric(5,2) not null default 0 check (weight between 0 and 100), -- % de la nota total; 0 = sin nota
+  weight        numeric(5,2) not null default 0 check (weight between 0 and 100), -- % de la nota total; configurable por actividad; 0 = sin nota
+  grading       jsonb not null default '{"mode":"own"}', -- quién califica: {"mode":"own"} cada docente a los suyos | {"mode":"both"} promedio | {"mode":"one","grader":"<person_id>"}
+  video_max_min numeric(4,1) not null default 3, -- duración máxima del video (min) en actividades con muro
+  url           text,                 -- enlace propio de la sesión; si es nulo se usa el primero de project.links
   wall          boolean not null default false,  -- se publica en el muro de videos
   min_comments  smallint not null default 0,     -- comentarios mínimos a compañeros (muro)
   template      jsonb,                -- reporte con secciones: [{"es":"Discusión","en":"Discussion","max":500}] (max = palabras)
@@ -94,14 +96,29 @@ create table resource (               -- Moodle: mdl_url / mdl_resource / mdl_bo
   lang        text not null default 'es'
 );
 
+create table media (                  -- archivos alojados en la plataforma (videos del muro)
+  id            uuid primary key default gen_random_uuid(),
+  owner_id      uuid not null references person(id),
+  kind          text not null default 'video' check (kind in ('video','file')),
+  filename      text not null,
+  mime          text not null,
+  size_bytes    bigint not null check (size_bytes > 0),
+  duration_s    numeric(7,2),
+  storage_ref   text not null,        -- ruta o clave en el almacenamiento (disco, moodledata, bucket)
+  created_at    timestamptz not null default now(),
+  deleted_at    timestamptz           -- política de retención: se borra el archivo y se conserva el registro
+);
+
 create table submission (             -- Moodle: mdl_assign_submission (+ onlinetext / files)
   id            uuid primary key default gen_random_uuid(),
   activity_id   uuid not null references activity(id) on delete cascade,
   team_id       uuid references team(id),          -- null si es individual
   author_id     uuid not null references person(id),
   body          text not null,
+  title         text,                 -- asunto de la publicación en el muro (p. ej. "EPN. Nombre Apellido")
   sections      jsonb,                -- respuestas por sección cuando la actividad tiene template
-  link_url      text,                 -- video (YouTube, OneDrive, Teams) o documento
+  media_id      uuid references media(id),    -- video subido a la plataforma
+  link_url      text,                 -- enlace externo opcional (documento, presentación)
   submitted_at  timestamptz not null default now()
 );
 -- una entrega por equipo o por persona; las actualizaciones reemplazan la fila
@@ -131,6 +148,8 @@ create table evaluation (             -- Moodle: mdl_assign_grades + mdl_grading
   feedback       text not null default '',
   created_at     timestamptz not null default now()
 );
+
+create unique index evaluation_one_per_teacher on evaluation (submission_id, evaluator_id);
 
 create table reflection (             -- Moodle: mdl_assign (texto en línea, sin nota)
   id          uuid primary key default gen_random_uuid(),
@@ -181,16 +200,29 @@ where m.role = 'student'
 group by m.project_id, m.person_id;
 
 -- Nota ponderada (0-100): suma de peso x (puntaje / 10) de las actividades calificadas.
+-- Respeta quién califica cada actividad (activity.grading):
+--   own  = la evaluación del docente de la misma institución que el estudiante
+--   one  = la evaluación del docente designado
+--   both = el promedio de las evaluaciones de todos los docentes
 -- Aprueba (y recibe insignia) quien llega a project.pass_pct.
 create view student_grade as
 select m.project_id, m.person_id,
-       round(coalesce(sum(a.weight * e.score / 10), 0), 1) as pct,
-       coalesce(sum(a.weight * e.score / 10), 0) >= p.pass_pct as passed
+       round(coalesce(sum(a.weight * sc.score / 10), 0), 1) as pct,
+       coalesce(sum(a.weight * sc.score / 10), 0) >= p.pass_pct as passed
 from project_member m
 join project p on p.id = m.project_id
+join person pe on pe.id = m.person_id
 join activity a on a.project_id = m.project_id and a.weight > 0
 left join submission s on s.activity_id = a.id
      and ((a.mode = 'team' and s.team_id = m.team_id) or (a.mode = 'individual' and s.author_id = m.person_id))
-left join lateral (select score from evaluation where submission_id = s.id order by created_at desc limit 1) e on true
+left join lateral (
+  select avg(e.score) as score
+  from evaluation e join person ev on ev.id = e.evaluator_id
+  where e.submission_id = s.id and (
+        a.grading->>'mode' = 'both'
+     or (a.grading->>'mode' = 'one' and (a.grading->>'grader' is null or e.evaluator_id::text = a.grading->>'grader'))
+     or (coalesce(a.grading->>'mode', 'own') = 'own' and ev.institution_id = pe.institution_id)
+  )
+) sc on true
 where m.role = 'student'
 group by m.project_id, m.person_id, p.pass_pct;
