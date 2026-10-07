@@ -10,12 +10,22 @@ MVP de un aula virtual **COIL** (Collaborative Online International Learning) pa
 |---|---|
 | [`docs/PROPUESTA-COIL-MVP.md`](docs/PROPUESTA-COIL-MVP.md) | Documento completo: **A** arquitectura y datos · **B** flujos UX y guía Figma · **C** prototipo · **D** integración Moodle/LMS · **E** checklist del piloto |
 | [`prototipo/aula-coil.html`](prototipo/aula-coil.html) | Prototipo funcional en un solo archivo. Se abre con doble clic |
-| [`db/schema.sql`](db/schema.sql) | Modelo de datos (12 tablas + vista de progreso), validado en PostgreSQL 16 |
+| [`db/schema.sql`](db/schema.sql) | Modelo de datos (14 tablas + vistas de progreso y nota ponderada), validado en PostgreSQL 16 |
 
 ## Enlaces
 
 - Prototipo publicado (Claude Artifact, privado hasta que se comparta): https://claude.ai/artifact/NYM9FuZHDEZLkBAnv4Bnp3
 - Diagramas en FigJam (modelo de datos, arquitecturas, flujos, secuencia LTI): https://www.figma.com/board/H4PMfd2USrRdSqSxnSOyY5
+
+## Qué incluye el prototipo
+
+- Proyecto COIL con 4 fases, equipos mixtos y foro por equipo.
+- **Muro de videos** (reemplaza a Padlet) con comentarios mínimos a compañeros.
+- **Notas ponderadas** (20/30/30/20) y aprobación al 70 % para recibir la insignia.
+- **Reporte por secciones** con límite de palabras.
+- **Plan de colaboración** editable y descargable en Word.
+- **Informe de evidencias** descargable en Word y notas en CSV.
+- Interfaz en español e inglés, con fechas en la zona horaria de cada persona.
 
 ## Probar el prototipo
 
@@ -24,4 +34,4 @@ MVP de un aula virtual **COIL** (Collaborative Online International Learning) pa
 3. Activa **Equivalencias Moodle** para ver qué módulo de Moodle implementa cada pantalla.
 4. **Restablecer demo** vuelve a los datos de ejemplo (se guardan solo en tu navegador).
 
-> Prototipo académico no oficial. "Partner University" es una institución ficticia de demostración.
+> Prototipo académico no oficial. "Universidad socia (demo)" es una institución ficticia de demostración.

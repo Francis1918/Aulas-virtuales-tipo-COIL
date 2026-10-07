@@ -41,8 +41,10 @@ create table project (                -- Moodle: mdl_course dentro de la categor
   institutions  text[] not null,      -- {'epn','pu'}
   courses       jsonb not null default '{}', -- {"epn": "Business Intelligence (ISWD743)", "pu": "..."}
   term          text,
-  starts_on     date not null,
+  starts_on     date not null,     -- ventana de colaboración (no el semestre completo)
   ends_on       date not null,
+  pass_pct      smallint not null default 70 check (pass_pct between 1 and 100), -- % mínimo para aprobar y recibir insignia
+  plan          jsonb not null default '{}',  -- plan de colaboración: objectives, ods[], strategy[], tools{}, inst{<id>: {schedule, semStart, semEnd, breaks}}
   status        text not null default 'draft' check (status in ('draft','active','closed')),
   meet_url      text,                 -- integración opcional Zoom/Teams
   drive_url     text,                 -- integración opcional Drive/OneDrive
@@ -75,6 +77,10 @@ create table activity (               -- Moodle: mdl_assign (task, reflection) /
   title         jsonb not null,
   instructions  text not null default '',
   due_at        timestamptz not null, -- UTC
+  weight        numeric(5,2) not null default 0 check (weight between 0 and 100), -- % de la nota total; 0 = sin nota
+  wall          boolean not null default false,  -- se publica en el muro de videos
+  min_comments  smallint not null default 0,     -- comentarios mínimos a compañeros (muro)
+  template      jsonb,                -- reporte con secciones: [{"es":"Discusión","en":"Discussion","max":500}] (max = palabras)
   rubric        jsonb,                -- [{"es":"Colaboración","en":"Collaboration","max":4}, ...]
   external_ref  jsonb not null default '{}'
 );
@@ -94,12 +100,27 @@ create table submission (             -- Moodle: mdl_assign_submission (+ online
   team_id       uuid references team(id),          -- null si es individual
   author_id     uuid not null references person(id),
   body          text not null,
-  link_url      text,
+  sections      jsonb,                -- respuestas por sección cuando la actividad tiene template
+  link_url      text,                 -- video (YouTube, OneDrive, Teams) o documento
   submitted_at  timestamptz not null default now()
 );
 -- una entrega por equipo o por persona; las actualizaciones reemplazan la fila
 create unique index submission_team_uq on submission (activity_id, team_id) where team_id is not null;
 create unique index submission_ind_uq  on submission (activity_id, author_id) where team_id is null;
+
+create table submission_like (        -- reacciones "me gusta" del muro
+  submission_id  uuid not null references submission(id) on delete cascade,
+  person_id      uuid not null references person(id),
+  primary key (submission_id, person_id)
+);
+
+create table comment (                -- comentarios del muro (Moodle: comentarios de Base de datos)
+  id             uuid primary key default gen_random_uuid(),
+  submission_id  uuid not null references submission(id) on delete cascade,
+  author_id      uuid not null references person(id),
+  body           text not null,
+  created_at     timestamptz not null default now()
+);
 
 create table evaluation (             -- Moodle: mdl_assign_grades + mdl_gradingform_rubric_fillings
   id             uuid primary key default gen_random_uuid(),
@@ -149,10 +170,27 @@ select m.project_id, m.person_id,
        count(a.id) as required,
        count(a.id) filter (where
          (a.kind = 'reflection' and exists (select 1 from reflection r where r.project_id = a.project_id and r.author_id = m.person_id and r.phase = a.phase))
-      or (a.kind = 'task' and a.mode = 'individual' and exists (select 1 from submission s where s.activity_id = a.id and s.author_id = m.person_id))
+      or (a.kind = 'task' and a.mode = 'individual' and exists (select 1 from submission s where s.activity_id = a.id and s.author_id = m.person_id)
+          and (select count(distinct c.submission_id) from comment c join submission s2 on s2.id = c.submission_id
+               where s2.activity_id = a.id and s2.author_id <> m.person_id and c.author_id = m.person_id) >= a.min_comments)
       or (a.kind = 'task' and a.mode = 'team' and exists (select 1 from submission s where s.activity_id = a.id and s.team_id = m.team_id))
        ) as done
 from project_member m
 join activity a on a.project_id = m.project_id and a.kind <> 'session'
 where m.role = 'student'
 group by m.project_id, m.person_id;
+
+-- Nota ponderada (0-100): suma de peso x (puntaje / 10) de las actividades calificadas.
+-- Aprueba (y recibe insignia) quien llega a project.pass_pct.
+create view student_grade as
+select m.project_id, m.person_id,
+       round(coalesce(sum(a.weight * e.score / 10), 0), 1) as pct,
+       coalesce(sum(a.weight * e.score / 10), 0) >= p.pass_pct as passed
+from project_member m
+join project p on p.id = m.project_id
+join activity a on a.project_id = m.project_id and a.weight > 0
+left join submission s on s.activity_id = a.id
+     and ((a.mode = 'team' and s.team_id = m.team_id) or (a.mode = 'individual' and s.author_id = m.person_id))
+left join lateral (select score from evaluation where submission_id = s.id order by created_at desc limit 1) e on true
+where m.role = 'student'
+group by m.project_id, m.person_id, p.pass_pct;

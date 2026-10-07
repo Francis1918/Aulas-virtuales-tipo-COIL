@@ -250,6 +250,37 @@ td.num { font-variant-numeric: tabular-nums; }
 .cal-item .stripe { background: var(--event); border-radius: 3px; }
 .cal-item .stripe.session { background: var(--navy-2); }
 
+/* muro de videos (estilo Padlet), plan e informe */
+.wall { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(280px, 1fr); gap: 14px; overflow-x: auto; padding-bottom: 12px; align-items: start; }
+.wcol { min-width: 0; background: var(--surface-2); border-radius: var(--radius); padding: 10px; display: grid; gap: 10px; align-content: start; }
+.wcol > h3 { font-size: 1.05rem; padding: 2px 4px; display: flex; justify-content: space-between; gap: 8px; }
+.wcard { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 12px; display: grid; gap: 8px; min-width: 0; }
+.wcard .post-head { flex-wrap: nowrap; }
+.vid { aspect-ratio: 16 / 9; max-width: 100%; background: linear-gradient(135deg, var(--navy), var(--navy-2)); border-radius: 4px; display: grid; place-items: center; text-decoration: none; }
+.vid span { width: 52px; height: 52px; border-radius: 50%; background: var(--gold); color: #1b2a4b; display: grid; place-items: center; }
+.vid svg.i { width: 24px; height: 24px; fill: currentColor; stroke: currentColor; }
+.vid:hover span { filter: brightness(1.08); }
+.wact { display: flex; gap: 12px; align-items: center; font-size: .85rem; flex-wrap: wrap; }
+.like { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; color: var(--muted); }
+.like.on { color: var(--red); border-color: var(--red); }
+.like.on svg.i { fill: currentColor; }
+.cmts { display: grid; gap: 6px; font-size: .85rem; border-top: 1px solid var(--line); padding-top: 8px; }
+.cmt { overflow-wrap: anywhere; }
+.cmt-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; }
+.cmt-form input { padding: 6px 8px; font-size: .85rem; }
+.chk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 6px 16px; }
+.wc { color: var(--muted); font-variant-numeric: tabular-nums; }
+.wc.over { color: var(--bad); font-weight: 600; }
+.plan h3 { font-size: 1.1rem; margin: 22px 0 8px; font-family: var(--font-head); font-weight: 500; }
+.plan > h3:first-child { margin-top: 0; }
+.plan ul { margin: 0; padding-left: 20px; }
+.plan p { margin: 4px 0 8px; }
+.meter { position: relative; height: 10px; background: var(--surface-2); border-radius: 5px; margin-top: 10px; max-width: 420px; }
+.meter > span { display: block; height: 100%; background: var(--navy-2); border-radius: 5px; }
+:root[data-theme="dark"] .meter > span { background: var(--gold); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .meter > span { background: var(--gold); } }
+.meter > i { position: absolute; top: -4px; bottom: -4px; width: 3px; background: var(--red); border-radius: 2px; }
+
 .overlay { position: fixed; inset: 0; background: rgba(10,15,30,.55); display: grid; place-items: center; padding: 16px; z-index: 40; }
 .modal { background: var(--surface); color: var(--fg); width: min(640px, 100%); max-height: 90vh; overflow: auto; border-radius: var(--radius); padding: 22px; border-top: 5px solid var(--gold); }
 .modal h2 { font-size: 1.4rem; margin-bottom: 12px; }
@@ -311,6 +342,26 @@ const T = {
     m_teams: 'Grupos y agrupamientos', m_forum: 'Foro en modo “grupos separados”', m_reflections: 'Tarea de texto en línea sin nota (o Diario)', m_resources: 'Recurso URL, Archivo o Libro',
     m_grades: 'Calificador + calificación avanzada con Rúbrica', m_progress: 'Finalización de curso + Insignias (Open Badges)', m_calendar: 'Calendario; cada usuario tiene su zona horaria',
     m_session: 'Plugin mod_zoom o actividad URL de Teams',
+    tab_wall: 'Muro', tab_plan: 'Plan', tab_report: 'Informe', weight: 'Peso', dueShort: 'Fecha límite',
+    wallTitle: 'Muro de videos', wallHelp: 'Cada equipo tiene su columna. Mira, reacciona y comenta los videos de tus compañeros.',
+    publishVideo: 'Publicar mi video', yourPost: 'Ya publicaste en la columna de tu equipo', noVideos: 'Todavía no hay videos en esta actividad.', watch: 'Ver video', like: 'Me gusta', comments: 'comentarios',
+    writeComment: 'Escribe un comentario…', commentBtn: 'Comentar', commentedOn: 'Has comentado a', of: 'de', peers: 'compañeros', st_incomplete: 'Falta comentar',
+    videoLink: 'Enlace al video (YouTube, OneDrive, Teams…)', videoHint: 'Video de 1 a 3 minutos. Súbelo a tu cuenta y pega aquí el enlace.',
+    gradeTotal: 'Nota total', ofHundred: 'de 100', goal: 'Meta', passed: 'Aprobó', notYet: 'Aún no', contributes: 'Aporte', pendingPts: 'puntos por calificar', weightSum: 'Suma de pesos', weightWarn: 'Los pesos no suman 100 %.',
+    badgeNeedPre: 'Necesitas al menos', badgeNeedPost: '% de la nota total para desbloquear tu insignia.',
+    window: 'Colaboración', semester: 'Semestre', special: 'Fechas especiales', classSched: 'Horario de clase', tool: 'Herramienta', purpose: 'Propósito',
+    planTitle: 'Plan de colaboración', editPlan: 'Editar plan', downloadPlan: 'Descargar plan (Word)', courses: 'Cursos participantes', calendars: 'Calendarios', objectives: 'Objetivos de aprendizaje',
+    ods: 'Objetivos de Desarrollo Sostenible', strategy: 'Estrategia de aprendizaje', schedule: 'Cronograma', delivery: 'Entrega', location: 'Ubicación', course: 'Curso', studentsN: 'Estudiantes',
+    toolsTitle: 'Herramientas', passRuleTitle: 'Criterio de aprobación', passRule: 'Aprueba quien alcanza al menos', passRule2: ' % de la nota total y recibe la insignia COIL.',
+    strat_abpro: 'Aprendizaje orientado a proyectos', strat_abi: 'Aprendizaje basado en investigación', strat_abprob: 'Aprendizaje basado en problemas',
+    purp_content: 'Gestión de contenido', purp_meet: 'Reuniones virtuales', purp_chat: 'Comunicación', purp_collab: 'Colaboración asincrónica',
+    d_session: 'Sesión en vivo', d_report: 'Reporte estructurado', d_video: 'Video en el muro', d_text: 'Texto y enlace', passPct: 'Porcentaje mínimo para aprobar',
+    wallOpt: 'Publicar en el muro de videos', minComments: 'Comentarios mínimos a compañeros',
+    reportTitle: 'Informe de evidencias', reportSummary: 'Resumen de actividades', downloadReport: 'Descargar informe (Word)', downloadCsv: 'Descargar notas (CSV)', participants: 'Participantes',
+    evidence: 'Evidencias publicadas', received: 'Recibidas', avg: 'Promedio', approved: 'Aprobaron', maxWords: 'máx.', words: 'palabras', tooLong: 'Una sección supera el límite de palabras.', downloaded: 'Archivo descargado',
+    t_comment: 'Comentario publicado', t_plan: 'Plan guardado',
+    m_wall: 'Actividad Base de datos (plantilla galería) con comentarios y valoraciones; o foro con enlaces', m_plan: 'Página o Libro del curso, generado desde la plantilla',
+    m_report: 'Informes del curso y exportación del Calificador a CSV/XLSX', m_weights: 'Calificador con categorías ponderadas; la insignia se otorga por calificación mínima del curso', m_template: 'Tarea de texto en línea con límite de palabras',
   },
   en: {
     brandSub: 'International collaboration', navHome: 'Dashboard', navCal: 'Calendar', viewAs: 'View as',
@@ -352,6 +403,26 @@ const T = {
     m_teams: 'Groups and groupings', m_forum: 'Forum in “separate groups” mode', m_reflections: 'Ungraded online text assignment (or Journal)', m_resources: 'URL, File or Book resource',
     m_grades: 'Gradebook + advanced grading with Rubric', m_progress: 'Course completion + Badges (Open Badges)', m_calendar: 'Calendar; each user has their own time zone',
     m_session: 'mod_zoom plugin or Teams URL activity',
+    tab_wall: 'Wall', tab_plan: 'Plan', tab_report: 'Report', weight: 'Weight', dueShort: 'Due date',
+    wallTitle: 'Video wall', wallHelp: 'Each team has its own column. Watch, react to and comment on your classmates’ videos.',
+    publishVideo: 'Post my video', yourPost: 'You already posted in your team’s column', noVideos: 'No videos in this activity yet.', watch: 'Watch video', like: 'Like', comments: 'comments',
+    writeComment: 'Write a comment…', commentBtn: 'Comment', commentedOn: 'You have commented on', of: 'of', peers: 'classmates', st_incomplete: 'Comments missing',
+    videoLink: 'Video link (YouTube, OneDrive, Teams…)', videoHint: 'A 1–3 minute video. Upload it to your account and paste the link here.',
+    gradeTotal: 'Total grade', ofHundred: 'out of 100', goal: 'Goal', passed: 'Passed', notYet: 'Not yet', contributes: 'Contribution', pendingPts: 'points still to be graded', weightSum: 'Weights total', weightWarn: 'Weights do not add up to 100%.',
+    badgeNeedPre: 'You need at least', badgeNeedPost: '% of the total grade to unlock your badge.',
+    window: 'Collaboration', semester: 'Semester', special: 'Special dates', classSched: 'Class schedule', tool: 'Tool', purpose: 'Purpose',
+    planTitle: 'Collaboration plan', editPlan: 'Edit plan', downloadPlan: 'Download plan (Word)', courses: 'Participating courses', calendars: 'Calendars', objectives: 'Learning objectives',
+    ods: 'Sustainable Development Goals', strategy: 'Learning strategy', schedule: 'Schedule', delivery: 'Delivery', location: 'Location', course: 'Course', studentsN: 'Students',
+    toolsTitle: 'Tools', passRuleTitle: 'Passing criterion', passRule: 'To pass, reach at least', passRule2: '% of the total grade and receive the COIL badge.',
+    strat_abpro: 'Project-based learning', strat_abi: 'Research-based learning', strat_abprob: 'Problem-based learning',
+    purp_content: 'Content management', purp_meet: 'Virtual meetings', purp_chat: 'Communication', purp_collab: 'Asynchronous collaboration',
+    d_session: 'Live session', d_report: 'Structured report', d_video: 'Video on the wall', d_text: 'Text and link', passPct: 'Minimum percentage to pass',
+    wallOpt: 'Post on the video wall', minComments: 'Minimum comments on classmates',
+    reportTitle: 'Evidence report', reportSummary: 'Activity summary', downloadReport: 'Download report (Word)', downloadCsv: 'Download grades (CSV)', participants: 'Participants',
+    evidence: 'Published evidence', received: 'Received', avg: 'Average', approved: 'Passed', maxWords: 'max.', words: 'words', tooLong: 'A section exceeds the word limit.', downloaded: 'File downloaded',
+    t_comment: 'Comment posted', t_plan: 'Plan saved',
+    m_wall: 'Database activity (gallery template) with comments and ratings; or a forum with links', m_plan: 'Course Page or Book, generated from the template',
+    m_report: 'Course reports and Gradebook export to CSV/XLSX', m_weights: 'Gradebook with weighted categories; the badge is awarded by minimum course grade', m_template: 'Online text assignment with word limit',
   },
 };
 
@@ -367,15 +438,17 @@ const PROMPTS = {
   3: { es: '¿Qué acuerdos ayudaron (o faltaron) para colaborar a distancia?', en: 'Which agreements helped (or were missing) to collaborate remotely?' },
   4: { es: '¿Qué te llevas de esta experiencia para tu vida profesional?', en: 'What do you take from this experience into your professional life?' },
 };
+const ODS_ES = ['Fin de la pobreza', 'Hambre cero', 'Salud y bienestar', 'Educación de calidad', 'Igualdad de género', 'Agua limpia y saneamiento', 'Energía asequible y no contaminante', 'Trabajo decente y crecimiento económico', 'Industria, innovación e infraestructura', 'Reducción de las desigualdades', 'Ciudades y comunidades sostenibles', 'Producción y consumo responsables', 'Acción por el clima', 'Vida submarina', 'Vida de ecosistemas terrestres', 'Paz, justicia e instituciones sólidas', 'Alianzas para lograr los objetivos'];
+const ODS_EN = ['No poverty', 'Zero hunger', 'Good health and well-being', 'Quality education', 'Gender equality', 'Clean water and sanitation', 'Affordable and clean energy', 'Decent work and economic growth', 'Industry, innovation and infrastructure', 'Reduced inequalities', 'Sustainable cities and communities', 'Responsible consumption and production', 'Climate action', 'Life below water', 'Life on land', 'Peace, justice and strong institutions', 'Partnerships for the goals'];
 const RUBRIC = [
   { es: 'Colaboración intercultural', en: 'Intercultural collaboration', max: 4 },
   { es: 'Calidad del producto', en: 'Product quality', max: 4 },
   { es: 'Comunicación', en: 'Communication', max: 2 },
 ];
-const CITY = { 'America/Guayaquil': 'Quito', 'Europe/Amsterdam': 'Ámsterdam' };
+const CITY = { 'America/Guayaquil': 'Quito', 'America/Chihuahua': 'Chihuahua', 'Europe/Amsterdam': 'Ámsterdam' };
 const TEAM_NAMES = ['Cóndor', 'Tulipán', 'Colibrí', 'Molino', 'Volcán', 'Canal', 'Chimborazo', 'Delta'];
 const DAY = 864e5;
-const LS_KEY = 'aula-coil-demo-v1';
+const LS_KEY = 'aula-coil-demo-v2';
 
 /* =====================================================================
    2. DATOS DE EJEMPLO. Misma forma que las tablas de db/schema.sql
@@ -385,11 +458,11 @@ function seed() {
   const at = (days, utcH, utcM = 0) => { const d = new Date(now + days * DAY); d.setUTCHours(utcH, utcM, 0, 0); return d.toISOString(); };
   const day = (days) => new Date(now + days * DAY).toISOString().slice(0, 10);
   const P = (id, name, inst, kind) => ({ id, name, institutionId: inst, kind, email: name.toLowerCase().normalize('NFD').replace(/[^a-z ]/g, '').replace(/ /g, '.') + '@example.edu',
-    tz: inst === 'epn' ? 'America/Guayaquil' : 'Europe/Amsterdam', lang: inst === 'epn' ? 'es' : 'en' });
+    tz: inst === 'epn' ? 'America/Guayaquil' : 'America/Chihuahua', lang: 'es' });
   const people = [
-    P('t1', 'María Cevallos', 'epn', 'teacher'), P('t2', 'Jan de Vries', 'pu', 'teacher'),
+    P('t1', 'María Cevallos', 'epn', 'teacher'), P('t2', 'Jorge Medina', 'pu', 'teacher'),
     P('s1', 'Francis Bravo', 'epn', 'student'), P('s2', 'Ana Guerrero', 'epn', 'student'), P('s3', 'Luis Pazmiño', 'epn', 'student'), P('s4', 'Camila Andrade', 'epn', 'student'),
-    P('s5', 'Sanne Bakker', 'pu', 'student'), P('s6', 'Daan Visser', 'pu', 'student'), P('s7', 'Emma Janssen', 'pu', 'student'), P('s8', 'Lucas Smit', 'pu', 'student'),
+    P('s5', 'Valeria Ortiz', 'pu', 'student'), P('s6', 'Diego Ramírez', 'pu', 'student'), P('s7', 'Mariana González', 'pu', 'student'), P('s8', 'Andrés Salazar', 'pu', 'student'),
   ];
   const team = { s1: 'tm1', s2: 'tm1', s5: 'tm1', s6: 'tm1', s3: 'tm2', s4: 'tm2', s7: 'tm2', s8: 'tm2' };
   const members = [
@@ -399,72 +472,94 @@ function seed() {
     { projectId: 'p2', personId: 't1', role: 'teacher', teamId: null, badgeAt: null },
     { projectId: 'p2', personId: 't2', role: 'teacher', teamId: null, badgeAt: null },
   ];
-  const A = (id, phase, kind, mode, es, en, due, ins) => ({ id, projectId: 'p1', phase, kind, mode, title: { es, en }, due, instructions: ins || '' });
+  const A = (id, phase, kind, mode, es, en, due, ins, extra) => Object.assign({ id, projectId: 'p1', phase, kind, mode, title: { es, en }, due, instructions: ins || '', weight: 0 }, extra || {});
+  const yt = 'https://www.youtube.com/';
   return {
     institutions: [
       { id: 'epn', name: 'Escuela Politécnica Nacional', short: 'EPN', country: 'Ecuador', tz: 'America/Guayaquil', lang: 'es' },
-      { id: 'pu', name: 'Partner University (demo)', short: 'PU', country: 'Países Bajos / Netherlands', tz: 'Europe/Amsterdam', lang: 'en' },
+      { id: 'pu', name: 'Universidad socia (demo)', short: 'PU', country: 'México', tz: 'America/Chihuahua', lang: 'es' },
     ],
     people,
     projects: [
       { id: 'p1', title: { es: 'Ciudades inteligentes con datos abiertos', en: 'Smart cities with open data' }, institutions: ['epn', 'pu'],
-        courses: { epn: 'Business Intelligence (ISWD743)', pu: 'Data Analytics for Society' }, term: '2026-B', status: 'active',
-        startsOn: day(-15), endsOn: day(55), meetUrl: 'https://zoom.us/', driveUrl: 'https://drive.google.com/',
-        description: { es: 'Equipos mixtos EPN–PU comparan datos abiertos de movilidad de Quito y Ámsterdam y construyen un dashboard con recomendaciones para ambas ciudades.',
-          en: 'Mixed EPN–PU teams compare open mobility data from Quito and Amsterdam and build a dashboard with recommendations for both cities.' } },
+        courses: { epn: 'Business Intelligence (ISWD743)', pu: 'Análisis de datos para la sociedad' }, term: '2026-B', status: 'active',
+        startsOn: day(-15), endsOn: day(55), passPct: 70, meetUrl: 'https://zoom.us/', driveUrl: 'https://drive.google.com/',
+        description: { es: 'Equipos mixtos EPN–PU comparan datos abiertos de movilidad de Quito y Chihuahua y construyen un dashboard con recomendaciones para ambas ciudades.',
+          en: 'Mixed EPN–PU teams compare open mobility data from Quito and Chihuahua and build a dashboard with recommendations for both cities.' },
+        plan: {
+          objectives: 'Comprender cómo se publican y usan los datos abiertos de movilidad en dos ciudades.\nComparar indicadores de ambos contextos y proponer mejoras viables.\nDesarrollar habilidades de colaboración intercultural y comunicación a distancia.',
+          ods: [9, 11, 13], strategy: ['abpro'],
+          tools: { content: { tool: 'Aula COIL', url: '' }, meet: { tool: 'Zoom / Teams', url: 'https://zoom.us/' }, chat: { tool: 'Foro del equipo (Aula COIL)', url: '' }, collab: { tool: 'Muro de videos (Aula COIL)', url: '' } },
+          inst: {
+            epn: { schedule: 'Mié 11:00–13:00 · Jue 13:00–16:00 (hora de Quito)', semStart: day(-45), semEnd: day(85), breaks: 'Sin pausas durante la colaboración' },
+            pu: { schedule: 'Mar y vie 10:00–13:00 (hora de Chihuahua)', semStart: day(-60), semEnd: day(70), breaks: 'Semana de bienestar a mitad del semestre' },
+          } } },
       { id: 'p2', title: { es: 'Emprendimiento social sin fronteras', en: 'Social entrepreneurship without borders' }, institutions: ['epn', 'pu'],
-        courses: { epn: 'Emprendimiento (ADMD700)', pu: 'Innovation Lab' }, term: '2027-A', status: 'draft',
-        startsOn: day(25), endsOn: day(95), meetUrl: '', driveUrl: '',
+        courses: { epn: 'Emprendimiento (ADMD700)', pu: 'Laboratorio de innovación' }, term: '2027-A', status: 'draft',
+        startsOn: day(25), endsOn: day(95), passPct: 70, meetUrl: '', driveUrl: '', plan: {},
         description: { es: 'Borrador: diseño de un emprendimiento social binacional.', en: 'Draft: designing a binational social venture.' } },
     ],
     members,
     teams: [{ id: 'tm1', projectId: 'p1', name: 'Cóndor' }, { id: 'tm2', projectId: 'p1', name: 'Tulipán' }],
     activities: [
-      A('a1', 1, 'task', 'individual', 'Video de presentación: mi ciudad en 2 minutos', 'Intro video: my city in 2 minutes', at(-8, 21, 59),
-        'Graba un video de máximo 2 minutos presentándote y mostrando un lugar de tu ciudad. Súbelo a la carpeta compartida y pega el enlace. / Record a max. 2-minute video introducing yourself and a place in your city.'),
-      A('a2', 1, 'session', 'team', 'Sesión de bienvenida', 'Welcome session', at(-12, 15)),
-      A('a3', 1, 'reflection', 'individual', 'Reflexión 1: primeras impresiones', 'Reflection 1: first impressions', at(-6, 21, 59)),
-      A('a4', 2, 'task', 'team', 'Mapa comparativo de datos abiertos Quito–Ámsterdam', 'Comparative open-data map Quito–Amsterdam', at(5, 21, 59),
-        'Identifiquen 3 conjuntos de datos de movilidad equivalentes en ambas ciudades y comparen su calidad y apertura. Entrega: enlace a una presentación o documento. / Find 3 equivalent mobility datasets in both cities and compare their quality and openness.'),
+      A('a1', 1, 'session', 'team', 'Sesión rompehielo: círculo de historias', 'Icebreaker session: story circle', at(-12, 15)),
+      A('a2', 1, 'task', 'individual', 'Video rompehielo (1–3 min)', 'Icebreaker video (1–3 min)', at(-8, 21, 59),
+        'Graba un video de 1 a 3 minutos: quién eres, de dónde eres, qué estudias y qué te gusta hacer en tu tiempo libre. Súbelo a tu cuenta (YouTube, OneDrive o Teams) y pega el enlace. Después comenta, en el muro, al menos a otros dos compañeros que no conozcas. Este es un lugar seguro y todos nos respetamos.',
+        { weight: 20, wall: true, minComments: 2 }),
+      A('a3', 1, 'reflection', 'individual', 'Diario 1: primeras impresiones', 'Journal 1: first impressions', at(-6, 21, 59)),
+      A('a4', 2, 'task', 'team', 'Actividad colaborativa 1: conceptualización', 'Collaborative activity 1: framing', at(5, 21, 59),
+        'En equipo, describan el problema y señalen las oportunidades de mejora que comparten ambos contextos. Respondan: ¿qué datos abiertos existen en cada ciudad y qué tan útiles son? Entreguen un enlace a una presentación o documento compartido.',
+        { weight: 30 }),
       A('a5', 2, 'session', 'team', 'Revisión de avances por equipo', 'Team progress check-in', at(3, 15)),
-      A('a6', 3, 'task', 'team', 'Dashboard colaborativo de movilidad urbana', 'Collaborative urban mobility dashboard', at(30, 21, 59),
-        'Construyan un dashboard (Power BI o similar) con al menos 4 indicadores comparables y 3 recomendaciones. / Build a dashboard with at least 4 comparable indicators and 3 recommendations.'),
-      A('a7', 3, 'reflection', 'individual', 'Reflexión 2: trabajar entre culturas', 'Reflection 2: working across cultures', at(33, 21, 59)),
-      A('a8', 4, 'task', 'team', 'Presentación final internacional', 'Final international presentation', at(48, 15),
-        'Presentación de 10 minutos en sesión conjunta. Cada integrante presenta una parte, en el idioma que prefiera. / 10-minute presentation in a joint session.'),
-      A('a9', 4, 'reflection', 'individual', 'Reflexión final y aprendizajes', 'Final reflection and learning', at(52, 21, 59)),
+      A('a6', 3, 'task', 'team', 'Actividad colaborativa 2: reporte del trabajo conjunto', 'Collaborative activity 2: joint report', at(30, 21, 59),
+        'Elaboren el reporte del trabajo conjunto con la estructura indicada. Cada sección tiene un límite de palabras: sean concisos y claros. Pueden adjuntar un enlace a imágenes o a un esquema.',
+        { weight: 30, template: [
+          { es: 'Objetivos del trabajo', en: 'Objectives', max: 120 }, { es: 'Metodología y resultados', en: 'Methodology and results', max: 300 },
+          { es: 'Discusión', en: 'Discussion', max: 500 }, { es: 'Conclusiones', en: 'Conclusions', max: 150 }] }),
+      A('a7', 3, 'reflection', 'individual', 'Diario 2: trabajar entre culturas', 'Journal 2: working across cultures', at(33, 21, 59)),
+      A('a8', 4, 'session', 'team', 'Presentación final ante el grupo', 'Final presentation to the group', at(48, 15)),
+      A('a9', 4, 'task', 'individual', 'Reflexión final en video (1–3 min)', 'Final reflection video (1–3 min)', at(52, 21, 59),
+        'Publica un video de 1 a 3 minutos con tu reflexión: ¿cómo influye tu bagaje cultural en la forma en que trabajas con otras personas? ¿La colaboración internacional cambió tu experiencia de aprendizaje o tu visión del mundo? ¿Qué mejorarías? Tómalas solo como guía.',
+        { weight: 20, wall: true, minComments: 0 }),
     ],
     resources: [
       { id: 'r1', projectId: 'p1', title: 'SUNY COIL Center: guía de colaboración', url: 'https://coil.suny.edu/', lang: 'en' },
       { id: 'r2', projectId: 'p1', title: 'Ciudad inteligente (Wikipedia)', url: 'https://es.wikipedia.org/wiki/Ciudad_inteligente', lang: 'es' },
-      { id: 'r3', projectId: 'p1', title: 'Smart city (Wikipedia)', url: 'https://en.wikipedia.org/wiki/Smart_city', lang: 'en' },
-      { id: 'r4', projectId: 'p1', title: 'Documentación de Power BI', url: 'https://learn.microsoft.com/power-bi/', lang: 'es' },
+      { id: 'r3', projectId: 'p1', title: 'Documentación de Power BI', url: 'https://learn.microsoft.com/power-bi/', lang: 'es' },
     ],
     submissions: [
-      ...['s1', 's2', 's3', 's5', 's6', 's7'].map((s, i) => ({ id: 'sb' + (i + 1), activityId: 'a1', teamId: null, authorId: s,
-        body: s === 's1' ? 'Mi video muestra el Centro Histórico de Quito y el trole. / My video shows Quito’s historic centre and the trolleybus.' : 'Video personal de presentación.',
-        linkUrl: 'https://drive.google.com/', submittedAt: at(-9 - (i % 2), 18) })),
-      { id: 'sb7', activityId: 'a4', teamId: 'tm2', authorId: 's7', body: 'Compared bike-share, bus GPS and traffic counts. / Comparamos bicicletas compartidas, GPS de buses y aforos.', linkUrl: 'https://drive.google.com/', submittedAt: at(-1, 14) },
+      ...['s1', 's2', 's3', 's5', 's6', 's7'].map((s, i) => ({ id: 'sb' + (i + 1), activityId: 'a2', teamId: null, authorId: s,
+        body: s === 's1' ? 'Mi video muestra el Centro Histórico de Quito y cuenta qué significa mi apellido en mi familia.' : 'Video de presentación: mi ciudad, mi carrera y lo que hago en mi tiempo libre.',
+        linkUrl: yt, submittedAt: at(-9 - (i % 2), 18), likes: s === 's1' ? ['s5', 's6', 't1'] : i % 2 ? ['s1'] : [] })),
+      { id: 'sb7', activityId: 'a4', teamId: 'tm2', authorId: 's7', sections: null, likes: [], body: 'Comparamos bicicletas compartidas, GPS de buses y aforos vehiculares de ambas ciudades.', linkUrl: 'https://drive.google.com/', submittedAt: at(-1, 14) },
     ],
     evaluations: [
-      { id: 'ev1', submissionId: 'sb1', evaluatorId: 't1', scores: [4, 3, 2], score: 9, feedback: 'Excelente presentación, muy clara para el equipo de Ámsterdam. Cuida el audio la próxima vez.', at: at(-7, 16) },
-      { id: 'ev2', submissionId: 'sb4', evaluatorId: 't2', scores: [3, 3, 2], score: 8, feedback: 'Nice and warm intro. Try adding subtitles in Spanish for your teammates.', at: at(-7, 9) },
+      { id: 'ev1', submissionId: 'sb1', evaluatorId: 't1', scores: [4, 3, 2], score: 9, feedback: 'Excelente presentación, muy clara para el equipo de Chihuahua. Cuida el audio la próxima vez.', at: at(-7, 16) },
+      { id: 'ev2', submissionId: 'sb4', evaluatorId: 't2', scores: [3, 3, 2], score: 8, feedback: 'Cálida y bien contada. Podrías agregar subtítulos para quienes ven sin sonido.', at: at(-7, 9) },
+      { id: 'ev3', submissionId: 'sb7', evaluatorId: 't1', scores: [3, 3, 2], score: 8, feedback: 'Buen punto de partida. En la siguiente entrega profundicen en la calidad de los datos.', at: at(-0.5, 16) },
+    ],
+    comments: [
+      { id: 'c1', targetId: 'sb1', authorId: 's5', body: 'Qué buena presentación, no sabía que en Quito se ven volcanes desde la ciudad.', at: at(-8, 20) },
+      { id: 'c2', targetId: 'sb1', authorId: 's6', body: 'Me gustó mucho la historia de tu apellido.', at: at(-8, 22) },
+      { id: 'c3', targetId: 'sb4', authorId: 's1', body: 'Me encantó cómo explicas el significado de tu nombre.', at: at(-8, 21) },
+      { id: 'c4', targetId: 'sb2', authorId: 's5', body: 'Nos faltó conocer qué estudias en la EPN, cuéntanos más en el foro.', at: at(-8, 23) },
+      { id: 'c5', targetId: 'sb2', authorId: 't1', body: 'Muy buen video, Ana.', at: at(-7, 12) },
     ],
     reflections: [
       { id: 'rf1', projectId: 'p1', authorId: 's1', phase: 1, visibility: 'teachers', at: at(-7, 2),
         body: 'Me sorprendió lo directos que son en las reuniones: van al grano y proponen una agenda. Aprendí a preparar mis ideas antes de cada llamada.' },
       { id: 'rf2', projectId: 'p1', authorId: 's5', phase: 1, visibility: 'team', at: at(-7, 10),
-        body: 'I noticed my Ecuadorian teammates start meetings with personal small talk. At first it felt slow, now I see it builds trust.' },
-      { id: 'rf3', projectId: 'p1', authorId: 's2', phase: 1, visibility: 'private', at: at(-6, 23), body: 'Me cuesta hablar en inglés en vivo, prefiero escribir primero.' },
+        body: 'Noté que mis compañeros de Quito empiezan las reuniones conversando de la familia. Al principio me pareció lento, ahora veo que genera confianza.' },
+      { id: 'rf3', projectId: 'p1', authorId: 's2', phase: 1, visibility: 'private', at: at(-6, 23), body: 'Me cuesta hablar frente a la cámara, prefiero escribir primero.' },
     ],
     posts: [
-      { id: 'po1', projectId: 'p1', teamId: null, authorId: 't2', parentId: null, lang: 'en', at: at(-13, 9), body: 'Welcome everyone! Please introduce yourself and tell us one thing you love about your city.' },
-      { id: 'po2', projectId: 'p1', teamId: null, authorId: 's1', parentId: 'po1', lang: 'es', at: at(-13, 14), body: '¡Hola a todos! Soy Francis, estudio Computación en la EPN. Me encanta que en Quito puedes ver volcanes desde la ciudad.' },
-      { id: 'po3', projectId: 'p1', teamId: null, authorId: 't1', parentId: null, lang: 'es', at: at(-10, 13), body: 'Recordatorio: la entrega del mapa comparativo es por equipo. Usen el canal de su equipo para coordinar.' },
-      { id: 'po4', projectId: 'p1', teamId: 'tm1', authorId: 's5', parentId: null, lang: 'en', at: at(-2, 8), body: 'Can we meet Thursday at 17:00 CEST? That should be 10:00 in Quito.' },
-      { id: 'po5', projectId: 'p1', teamId: 'tm1', authorId: 's1', parentId: 'po4', lang: 'es', at: at(-2, 13), body: 'Sí, perfecto para mí. Yes, works for me!' },
-      { id: 'po6', projectId: 'p1', teamId: 'tm1', authorId: 's6', parentId: null, lang: 'en', at: at(-1, 10), body: 'I uploaded the Amsterdam bike-share dataset to our shared folder.' },
-      { id: 'po7', projectId: 'p1', teamId: 'tm2', authorId: 's3', parentId: null, lang: 'es', at: at(-1, 19), body: 'Ya subimos el mapa comparativo. ¿Alguien revisa la ortografía en inglés?' },
+      { id: 'po1', projectId: 'p1', teamId: null, authorId: 't2', parentId: null, lang: 'es', at: at(-13, 9), body: 'Bienvenidos todos. Preséntense y cuéntennos algo que les guste de su ciudad.' },
+      { id: 'po2', projectId: 'p1', teamId: null, authorId: 's1', parentId: 'po1', lang: 'es', at: at(-13, 14), body: '¡Hola a todos! Soy Francis, estudio Computación en la EPN. Me encanta que en Quito se pueden ver volcanes desde la ciudad.' },
+      { id: 'po3', projectId: 'p1', teamId: null, authorId: 't1', parentId: null, lang: 'es', at: at(-10, 13), body: 'Recordatorio: la actividad colaborativa 1 es por equipo. Usen el canal de su equipo para coordinar.' },
+      { id: 'po4', projectId: 'p1', teamId: 'tm1', authorId: 's5', parentId: null, lang: 'es', at: at(-2, 8), body: '¿Nos reunimos el jueves a las 17:00 hora de Chihuahua? Serían las 18:00 en Quito.' },
+      { id: 'po5', projectId: 'p1', teamId: 'tm1', authorId: 's1', parentId: 'po4', lang: 'es', at: at(-2, 13), body: 'Sí, perfecto para mí.' },
+      { id: 'po6', projectId: 'p1', teamId: 'tm1', authorId: 's6', parentId: null, lang: 'es', at: at(-1, 10), body: 'Subí los datos de bicicletas compartidas de Chihuahua a la carpeta del equipo.' },
+      { id: 'po7', projectId: 'p1', teamId: 'tm2', authorId: 's3', parentId: null, lang: 'es', at: at(-1, 19), body: 'Ya subimos el mapa comparativo. ¿Alguien revisa la redacción?' },
     ],
   };
 }
@@ -479,7 +574,7 @@ function load() { try { const raw = localStorage.getItem(LS_KEY); return raw ? J
 function save() { try { localStorage.setItem(LS_KEY, JSON.stringify({ db, ui: { ...ui, modal: null, toast: null } })); } catch (e) { /* almacenamiento no disponible */ } }
 const stored = load();
 let db = stored ? stored.db : seed();
-let ui = Object.assign({ userId: 's1', lang: 'es', view: 'home', projectId: null, tab: 'activities', openAct: null, moodle: false,
+let ui = Object.assign({ userId: 's1', lang: 'es', view: 'home', projectId: null, tab: 'activities', openAct: null, wallAct: null, moodle: false,
   channel: 'general', replyTo: null, reflPhase: null, gradeSub: null, form: null, modal: null }, stored ? stored.ui : {});
 
 /* =====================================================================
@@ -550,7 +645,23 @@ function subFor(a, sid) {
 }
 const reflFor = (pid, sid, phase) => db.reflections.find((r) => r.projectId === pid && r.authorId === sid && r.phase === phase);
 const evalFor = (sub) => sub && db.evaluations.find((e) => e.submissionId === sub.id);
-const isDone = (a, sid) => (a.kind === 'reflection' ? !!reflFor(a.projectId, sid, a.phase) : !!subFor(a, sid));
+const words = (s) => (String(s || '').trim().match(/\S+/g) || []).length;
+/* Comentarios distintos que hizo una persona a publicaciones ajenas de una actividad con muro */
+const commentsBy = (a, sid) => {
+  const ids = db.submissions.filter((s) => s.activityId === a.id && s.authorId !== sid).map((s) => s.id);
+  return new Set(db.comments.filter((c) => c.authorId === sid && ids.includes(c.targetId)).map((c) => c.targetId)).size;
+};
+const isDone = (a, sid) => (a.kind === 'reflection' ? !!reflFor(a.projectId, sid, a.phase) : !!subFor(a, sid) && commentsBy(a, sid) >= (a.minComments || 0));
+const passPct = (pid) => (project(pid) || {}).passPct || 70;
+/* Nota ponderada: cada actividad con peso aporta peso × (puntaje / 10). Solo cuenta lo ya calificado. */
+function gradeOf(pid, sid) {
+  let pct = 0, graded = 0, total = 0;
+  db.activities.filter((a) => a.projectId === pid && a.weight > 0).forEach((a) => {
+    total += a.weight; const ev = evalFor(subFor(a, sid));
+    if (ev) { pct += (a.weight * ev.score) / 10; graded += a.weight; }
+  });
+  return { pct: Math.round(pct * 10) / 10, graded, total };
+}
 function progressOf(pid, sid) { const r = required(pid); return r.length ? Math.round((100 * r.filter((a) => isDone(a, sid)).length) / r.length) : 0; }
 function courseProgress(pid) { const s = studentsOf(pid); return s.length ? Math.round(s.reduce((n, m) => n + progressOf(pid, m.personId), 0) / s.length) : 0; }
 function currentPhase(pid) {
@@ -561,6 +672,7 @@ function statusOf(a, sid) {
   if (a.kind === 'session') return new Date(a.due) < Date.now() ? ['st_done', ''] : ['st_pending', 'info'];
   if (a.kind === 'reflection') return isDone(a, sid) ? ['st_done', 'ok'] : new Date(a.due) < Date.now() ? ['st_overdue', 'bad'] : ['st_pending', 'warn'];
   const s = subFor(a, sid);
+  if (s && commentsBy(a, sid) < (a.minComments || 0)) return ['st_incomplete', 'warn'];
   if (s && evalFor(s)) return ['st_graded', 'ok'];
   if (s) return ['st_submitted', 'ok'];
   return new Date(a.due) < Date.now() ? ['st_overdue', 'bad'] : ['st_pending', 'warn'];
@@ -578,6 +690,8 @@ const ICONS = {
   book: '<path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4zM20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/>',
   list: '<path d="M4 6h16M4 12h16M4 18h16"/>', link: '<path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/>', home: '<path d="M3 11l9-7 9 7v9H3z"/><path d="M10 20v-6h4v6"/>', grade: '<path d="M4 4h16v16H4z"/><path d="M8 15l3-6 3 6M9 13h4M16 9v4M14 11h4"/>',
 };
+ICONS.heart = '<path d="M20.8 5.6a5 5 0 00-7.1 0L12 7.3l-1.7-1.7a5 5 0 00-7.1 7.1l1.7 1.7L12 21.5l7.1-7.1 1.7-1.7a5 5 0 000-7.1z"/>';
+ICONS.play = '<path d="M8 5l11 7-11 7z"/>';
 const ic = (n) => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 const KIND_ICON = { task: 'file', reflection: 'pen', session: 'video' };
 const instChip = (id) => `<span class="inst ${esc(id)}">${esc(inst(id).short)}</span>`;
@@ -593,20 +707,20 @@ const actions = {
     const pid = uid('p'); const partner = db.institutions.find((i) => i.id !== me().institutionId) || db.institutions[1];
     const p = { id: pid, title: { es: f.title, en: f.titleOther || f.title }, institutions: ['epn', partner.id === 'epn' ? me().institutionId : partner.id],
       courses: { epn: f.courseEpn, pu: f.coursePartner }, term: f.start.slice(0, 4), status: 'active', startsOn: f.start, endsOn: f.end,
-      meetUrl: f.meetUrl, driveUrl: f.driveUrl, description: { es: f.description, en: f.description } };
+      meetUrl: f.meetUrl, driveUrl: f.driveUrl, passPct: 70, plan: {}, description: { es: f.description, en: f.description } };
     db.projects.push(p);
     db.members.push({ projectId: pid, personId: me().id, role: 'teacher', teamId: null, badgeAt: null });
     db.people.filter((x) => x.kind === 'teacher' && x.id !== me().id).forEach((x) => db.members.push({ projectId: pid, personId: x.id, role: 'teacher', teamId: null, badgeAt: null }));
     if (f.template) {
       const s = new Date(f.start + 'T00:00:00Z').getTime(), e = new Date(f.end + 'T00:00:00Z').getTime(), span = Math.max(e - s, 28 * DAY);
-      const mk = (frac, phase, kind, mode, es, en) => db.activities.push({ id: uid('a'), projectId: pid, phase, kind, mode, title: { es, en }, instructions: '',
-        due: new Date(s + span * frac + 21 * 36e5 + 59 * 6e4).toISOString() });
-      mk(0.08, 1, 'session', 'team', 'Sesión de bienvenida', 'Welcome session');
-      mk(0.15, 1, 'reflection', 'individual', 'Reflexión 1: primeras impresiones', 'Reflection 1: first impressions');
-      mk(0.40, 2, 'task', 'team', 'Comparación entre ambos contextos', 'Comparison between both contexts');
-      mk(0.75, 3, 'task', 'team', 'Producto colaborativo', 'Collaborative product');
-      mk(0.95, 4, 'task', 'team', 'Presentación final', 'Final presentation');
-      mk(1.0, 4, 'reflection', 'individual', 'Reflexión final', 'Final reflection');
+      const mk = (frac, phase, kind, mode, es, en, extra) => db.activities.push(Object.assign({ id: uid('a'), projectId: pid, phase, kind, mode, title: { es, en }, instructions: '', weight: 0,
+        due: new Date(s + span * frac + 21 * 36e5 + 59 * 6e4).toISOString() }, extra || {}));
+      mk(0.08, 1, 'session', 'team', 'Sesión rompehielo', 'Icebreaker session');
+      mk(0.15, 1, 'task', 'individual', 'Video rompehielo (1–3 min)', 'Icebreaker video (1–3 min)', { weight: 20, wall: true, minComments: 2 });
+      mk(0.40, 2, 'task', 'team', 'Actividad colaborativa 1', 'Collaborative activity 1', { weight: 30 });
+      mk(0.75, 3, 'task', 'team', 'Actividad colaborativa 2', 'Collaborative activity 2', { weight: 30 });
+      mk(0.92, 4, 'session', 'team', 'Presentación final', 'Final presentation');
+      mk(1.0, 4, 'task', 'individual', 'Reflexión final en video (1–3 min)', 'Final reflection video (1–3 min)', { weight: 20, wall: true, minComments: 0 });
     }
     Object.assign(ui, { view: 'project', projectId: pid, tab: 'teams', modal: null });
     toast(t('t_proj'));
@@ -615,13 +729,18 @@ const actions = {
   createActivity(f) {
     db.activities.push({ id: uid('a'), projectId: ui.projectId, phase: +f.phase, kind: f.kind, mode: f.kind === 'reflection' ? 'individual' : f.mode,
       title: ui.lang === 'es' ? { es: f.title, en: f.titleOther || f.title } : { en: f.title, es: f.titleOther || f.title },
-      instructions: f.instructions, due: zonedToUtc(f.due, me().tz) });
+      instructions: f.instructions, due: zonedToUtc(f.due, me().tz), weight: Math.max(0, +f.weight || 0), wall: !!f.wall, minComments: f.wall ? Math.max(0, +f.minComments || 0) : 0 });
     ui.form = null; toast(t('t_act'));
   },
   // POST /api/v1/activities/:id/submissions  (si ya existe: PATCH)
   submit(f, el) {
     const a = db.activities.find((x) => x.id === el.dataset.id); const sid = me().id; const prev = subFor(a, sid);
-    const data = { body: f.body, linkUrl: f.linkUrl, submittedAt: new Date().toISOString(), authorId: sid };
+    const data = { body: f.body || '', linkUrl: f.linkUrl || '', submittedAt: new Date().toISOString(), authorId: sid };
+    if (a.template) {
+      const secs = a.template.map((_, i) => f['sec' + i] || '');
+      if (a.template.some((sec, i) => words(secs[i]) > sec.max)) { toast(t('tooLong')); return false; }
+      data.sections = secs; data.body = secs.join('\n\n');
+    }
     if (prev) Object.assign(prev, data);
     else db.submissions.push(Object.assign({ id: uid('sb'), activityId: a.id, teamId: a.mode === 'team' ? teamIdOf(a.projectId, sid) : null }, data));
     toast(t('t_sub'));
@@ -638,6 +757,17 @@ const actions = {
     db.posts.push({ id: uid('po'), projectId: ui.projectId, teamId: ui.channel === 'general' ? null : ui.channel, authorId: me().id,
       parentId: ui.replyTo, lang: ui.lang, at: new Date().toISOString(), body: f.body });
     ui.replyTo = null; toast(t('t_post'));
+  },
+  // POST /api/v1/submissions/:id/comments
+  comment(f, el) { db.comments.push({ id: uid('c'), targetId: el.dataset.id, authorId: me().id, body: f.body, at: new Date().toISOString() }); toast(t('t_comment')); },
+  // PUT /api/v1/projects/:id/plan
+  plan(f) {
+    const p = project(ui.projectId);
+    p.passPct = Math.max(1, Math.min(100, +f.passPct || 70));
+    p.plan = { objectives: f.objectives, ods: (f['ods[]'] || []).map(Number), strategy: f['strategy[]'] || [],
+      tools: Object.fromEntries(['content', 'meet', 'chat', 'collab'].map((k) => [k, { tool: f['tool_' + k], url: f['url_' + k] }])),
+      inst: Object.fromEntries(p.institutions.map((i) => [i, { schedule: f['sch_' + i], semStart: f['ss_' + i], semEnd: f['se_' + i], breaks: f['br_' + i] }])) };
+    ui.form = null; toast(t('t_plan'));
   },
   // POST /api/v1/projects/:id/resources
   resource(f) { db.resources.push({ id: uid('r'), projectId: ui.projectId, title: f.title, url: f.url, lang: ui.lang }); ui.form = null; toast(t('t_res')); },
@@ -672,6 +802,14 @@ const clickActions = {
   cancelReply: () => { ui.replyTo = null; },
   reflPhase: (d) => { ui.reflPhase = +d.phase; },
   gradeSub: (d) => Object.assign(ui, { tab: 'grades', gradeSub: d.id }),
+  goWall: (d) => Object.assign(ui, { tab: 'wall', wallAct: d.id }),
+  postWall: (d) => Object.assign(ui, { tab: 'activities', openAct: d.id }),
+  // POST /api/v1/submissions/:id/likes  (alterna)
+  like: (d) => { const x = db.submissions.find((y) => y.id === d.id); if (!x) return; x.likes = x.likes || []; const i = x.likes.indexOf(ui.userId); if (i >= 0) x.likes.splice(i, 1); else x.likes.push(ui.userId); },
+  // GET /api/v1/projects/:id/plan.docx · /report.docx · /grades.csv
+  downloadPlan: () => { const p = project(ui.projectId); downloadFile('plan-' + slug(L(p.title)) + '.doc', 'application/msword', wordDoc(t('planTitle') + ' · ' + L(p.title), planBody(p))); },
+  downloadReport: () => { const p = project(ui.projectId); downloadFile('informe-' + slug(L(p.title)) + '.doc', 'application/msword', wordDoc(t('reportTitle') + ' · ' + L(p.title), reportBody(p))); },
+  downloadCsv: () => { const p = project(ui.projectId); downloadFile('notas-' + slug(L(p.title)) + '.csv', 'text/csv', '﻿' + gradesCsv(p)); },
   // POST /api/v1/projects/:id/badges   (en Moodle: Insignias)
   badge: (d) => { const m = member(ui.projectId, d.id); if (m) { m.badgeAt = new Date().toISOString(); toast(t('t_badge')); } },
   // POST /api/v1/projects/:id/teams:auto  — reparte por institución para que cada equipo quede mixto
@@ -687,6 +825,7 @@ const clickActions = {
 const changeActions = {
   viewAs: (v) => { ui.userId = v; ui.lang = person(v).lang; if (ui.projectId && !myProjects().some((p) => p.id === ui.projectId)) Object.assign(ui, { view: 'home', projectId: null }); ui.form = null; ui.gradeSub = null; },
   channel: (v) => { ui.channel = v; ui.replyTo = null; },
+  wallAct: (v) => { ui.wallAct = v; },
   // PATCH /api/v1/projects/:id/members/:personId  { teamId }
   moveMember: (v, el) => { const m = member(ui.projectId, el.dataset.id); if (m) { m.teamId = v || null; toast(t('t_teams')); } },
 };
@@ -782,8 +921,9 @@ function viewCalendar() {
 function viewProject() {
   const p = project(ui.projectId); if (!p) { ui.view = 'home'; return viewHome(); }
   const ph = currentPhase(p.id); const teacher = isTeacher(p.id);
-  const tabs = [['activities', 'file'], ['teams', 'users'], ['forum', 'chat'], ['reflections', 'pen'], ['resources', 'book'], ['grades', 'grade'], ['progress', 'chart']];
-  const panels = { activities: tabActivities, teams: tabTeams, forum: tabForum, reflections: tabReflections, resources: tabResources, grades: tabGrades, progress: tabProgress };
+  const tabs = [['activities', 'file'], ['wall', 'video'], ['teams', 'users'], ['forum', 'chat'], ['reflections', 'pen'], ['resources', 'book'], ['grades', 'grade'], ['progress', 'chart'], ['plan', 'list'], ['report', 'folder']].filter(([k]) => k !== 'report' || teacher);
+  const panels = { activities: tabActivities, wall: tabWall, teams: tabTeams, forum: tabForum, reflections: tabReflections, resources: tabResources, grades: tabGrades, progress: tabProgress, plan: tabPlan, report: tabReport };
+  if (!panels[ui.tab] || (ui.tab === 'report' && !teacher)) ui.tab = 'activities';
   return `<main class="wrap">
     <nav class="crumbs"><a href="#" data-act="go" data-view="home">${esc(t('navHome'))}</a> / <span>${esc(L(p.title))}</span></nav>
     <section class="hero">
@@ -792,7 +932,7 @@ function viewProject() {
         <h1>${esc(L(p.title))}</h1>
         <p style="margin:0 0 8px;max-width:70ch">${esc(L(p.description))}</p>
         <div class="facts"><span>${esc(t('courseEpn'))}: <strong>${esc(p.courses.epn)}</strong></span><span>${esc(t('coursePartner'))}: <strong>${esc(p.courses.pu)}</strong></span>
-          <span>${esc(fmt(p.startsOn + 'T12:00:00Z', 'UTC', { day: 'numeric', month: 'short' }))} – ${esc(fmt(p.endsOn + 'T12:00:00Z', 'UTC', { day: 'numeric', month: 'short', year: 'numeric' }))}</span>
+          <span>${esc(t('window'))}: ${esc(fmt(p.startsOn + 'T12:00:00Z', 'UTC', { day: 'numeric', month: 'short' }))} – ${esc(fmt(p.endsOn + 'T12:00:00Z', 'UTC', { day: 'numeric', month: 'short', year: 'numeric' }))}</span>
           <span>${teachersOf(p.id).length} ${esc(t('teachers'))} · ${studentsOf(p.id).length} ${esc(t('students'))} · ${teamsOf(p.id).length} ${esc(t('teamsN'))}</span></div>
         ${ui.moodle ? `<p style="margin:10px 0 0">${mchip('project')}</p>` : ''}
       </div>
@@ -816,6 +956,11 @@ function tabActivities(p, teacher) {
         <label class="field"><span>${esc(t('phase'))}</span><select id="f-a-phase" name="phase">${[1, 2, 3, 4].map((n) => `<option value="${n}" ${n === currentPhase(p.id) ? 'selected' : ''}>${n} · ${esc(L(PHASES[n]))}</option>`).join('')}</select></label>
         <label class="field"><span>${esc(t('kind'))}</span><select id="f-a-kind" name="kind">${['task', 'reflection', 'session'].map((k) => `<option value="${k}">${esc(t('kind_' + k))}</option>`).join('')}</select></label>
         <label class="field"><span>${esc(t('mode'))}</span><select id="f-a-mode" name="mode"><option value="team">${esc(t('mode_team'))}</option><option value="individual">${esc(t('mode_individual'))}</option></select></label>
+      </div>
+      <div class="row">
+        <label class="field"><span>${esc(t('weight'))} (%)</span><input id="f-a-weight" name="weight" type="number" min="0" max="100" value="0"></label>
+        <label class="field"><span>${esc(t('minComments'))}</span><input id="f-a-minc" name="minComments" type="number" min="0" max="10" value="0"></label>
+        <label class="check" style="align-self:end;min-height:38px"><input id="f-a-wall" name="wall" type="checkbox"> ${esc(t('wallOpt'))}</label>
       </div>
       <label class="field"><span>${esc(t('title'))} *</span><input id="f-a-title" name="title" type="text" required></label>
       <label class="field"><span>${esc(t('titleOther'))}</span><input id="f-a-title2" name="titleOther" type="text"></label>
@@ -856,23 +1001,19 @@ function activityItem(a, p, teacher) {
         </tbody></table></div>` : `<div class="empty">—</div>`}`;
     } else {
       const s = subFor(a, u.id); const ev = evalFor(s); const tm = db.teams.find((x) => x.id === teamIdOf(p.id, u.id));
-      inner = `${ins}
+      inner = `${ins}${a.wall ? wallHint(a, u) : ''}
         ${a.mode === 'team' ? `<p class="muted" style="margin:0;font-size:.86rem">${ic('users')} ${esc(t('teamOf'))} ${esc(tm ? tm.name : t('noTeam'))}. ${esc(t('teamNote'))}</p>` : ''}
         ${s ? `<div class="box"><p><strong>${esc(a.mode === 'team' ? t('teamSub') : t('yourSub'))}</strong> · ${esc(t('by'))} ${esc(person(s.authorId).name)} · ${esc(rel(s.submittedAt))}</p>
-            <p style="white-space:pre-wrap">${esc(s.body)}</p>${s.linkUrl ? `<p><a href="${esc(s.linkUrl)}" target="_blank" rel="noopener">${ic('link')} ${esc(s.linkUrl)}</a></p>` : ''}</div>` : ''}
+            ${subBody(s)}${s.linkUrl ? `<p><a href="${esc(s.linkUrl)}" target="_blank" rel="noopener">${ic('link')} ${esc(s.linkUrl)}</a></p>` : ''}</div>` : ''}
         ${ev ? `<div class="box" style="border-left:4px solid var(--ok)"><p><strong>${esc(t('score'))}: ${ev.score}/10</strong> · ${esc(person(ev.evaluatorId).name)}</p><p>${esc(ev.feedback)}</p></div>` : ''}
-        ${!ev && (a.mode !== 'team' || tm) ? `<form class="stack" data-form="submit" data-id="${esc(a.id)}">
-          ${s ? `<p class="muted" style="margin:0;font-size:.84rem">${esc(t('edit'))}</p>` : ''}
-          <label class="field"><span>${esc(t('text'))} *</span><textarea id="f-sub-${esc(a.id)}" name="body" required>${s ? esc(s.body) : ''}</textarea></label>
-          <label class="field"><span>${esc(t('link'))}</span><input id="f-subl-${esc(a.id)}" name="linkUrl" type="url" placeholder="https://" value="${s ? esc(s.linkUrl) : ''}"></label>
-          <div><button class="btn" type="submit">${esc(s ? t('update') : t('submit'))}</button></div></form>` : ''}`;
+        ${!ev && (a.mode !== 'team' || tm) ? submitForm(a, s) : ''}`;
     }
   }
   return `<article class="act">
     <button class="act-head" data-act="toggleAct" data-id="${esc(a.id)}" aria-expanded="${open}">
       <span class="kicon">${ic(KIND_ICON[a.kind])}</span>
       <span style="min-width:0"><span class="act-title">${esc(L(a.title))}</span>
-        <span class="act-meta"><span>${esc(t('kind_' + a.kind))} · ${esc(t('mode_' + a.mode))}</span><span>${when(a.due, p.id)}</span></span></span>
+        <span class="act-meta"><span>${esc(t('kind_' + a.kind))} · ${esc(t('mode_' + a.mode))}${a.weight ? ` · ${a.weight} %` : ''}</span><span>${when(a.due, p.id)}</span></span></span>
       ${right}
     </button>${open ? `<div class="act-body">${inner}</div>` : ''}</article>`;
 }
@@ -976,12 +1117,18 @@ function tabResources(p, teacher) {
 function tabGrades(p, teacher) {
   const u = me();
   if (!teacher) {
-    const rows = required(p.id).filter((a) => a.kind === 'task').map((a) => { const s = subFor(a, u.id); const ev = evalFor(s); const [st, cls] = statusOf(a, u.id);
-      return `<tr><td>${esc(L(a.title))}</td><td><span class="pill ${cls}">${esc(t(st))}</span></td><td class="num">${ev ? ev.score + '/10' : '—'}</td><td style="min-width:220px">${ev ? esc(ev.feedback) : `<span class="muted">${esc(t('notGraded'))}</span>`}</td></tr>`; }).join('');
-    return `<div class="panel-h"><h2>${esc(t('myGrades'))}</h2>${mchip('grades')}</div>
-      <div class="table-wrap"><table><thead><tr><th>${esc(t('activity'))}</th><th>${esc(t('status'))}</th><th>${esc(t('score'))}</th><th>${esc(t('feedback'))}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    const g = gradeOf(p.id, u.id); const pass = passPct(p.id);
+    const rows = db.activities.filter((a) => a.projectId === p.id && a.weight > 0).sort(byDate('due')).map((a) => { const sb = subFor(a, u.id); const ev = evalFor(sb); const [st, cls] = statusOf(a, u.id);
+      return `<tr><td>${esc(L(a.title))}</td><td class="num">${a.weight} %</td><td><span class="pill ${cls}">${esc(t(st))}</span></td><td class="num">${ev ? ev.score + '/10' : '—'}</td><td class="num">${ev ? ((a.weight * ev.score) / 10).toFixed(1) : '—'}</td><td style="min-width:220px">${ev ? esc(ev.feedback) : `<span class="muted">${esc(t('notGraded'))}</span>`}</td></tr>`; }).join('');
+    return `<div class="panel-h"><h2>${esc(t('myGrades'))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap">${mchip('grades')}${mchip('weights')}</div></div>
+      <div class="card" style="margin-bottom:12px"><strong style="font-size:1.1rem">${esc(t('gradeTotal'))}: ${g.pct} ${esc(t('ofHundred'))}</strong>
+        <span class="pill ${g.pct >= pass ? 'ok' : 'warn'}" style="margin-left:8px">${esc(g.pct >= pass ? t('passed') : t('notYet'))}</span>
+        <div class="meter" role="img" aria-label="${g.pct} / 100"><span style="width:${Math.min(100, g.pct)}%"></span><i style="left:${pass}%" title="${esc(t('goal'))} ${pass}"></i></div>
+        <p class="muted" style="margin:8px 0 0;font-size:.85rem">${esc(t('goal'))}: ${pass} · ${g.total - g.graded} ${esc(t('pendingPts'))}</p></div>
+      <div class="table-wrap"><table><thead><tr><th>${esc(t('activity'))}</th><th>${esc(t('weight'))}</th><th>${esc(t('status'))}</th><th>${esc(t('score'))}</th><th>${esc(t('contributes'))}</th><th>${esc(t('feedback'))}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }
   const actIds = db.activities.filter((a) => a.projectId === p.id).map((a) => a.id);
+  const wsum = db.activities.filter((x) => x.projectId === p.id).reduce((n, x) => n + (x.weight || 0), 0);
   const subs = db.submissions.filter((s) => actIds.includes(s.activityId));
   const pending = subs.filter((s) => !evalFor(s)); const done = subs.filter((s) => evalFor(s));
   const cur = subs.find((s) => s.id === ui.gradeSub && !evalFor(s)) || pending[0];
@@ -991,13 +1138,13 @@ function tabGrades(p, teacher) {
     const [title, who] = label(cur);
     formHtml = `<form class="card stack" data-form="grade" data-id="${esc(cur.id)}">
       <div><div class="muted" style="font-size:.84rem">${esc(who)} · ${esc(rel(cur.submittedAt))}</div><h3 style="font-size:1.15rem">${esc(title)}</h3></div>
-      <div class="box"><p style="white-space:pre-wrap">${esc(cur.body)}</p>${cur.linkUrl ? `<p><a href="${esc(cur.linkUrl)}" target="_blank" rel="noopener">${esc(cur.linkUrl)}</a></p>` : ''}</div>
+      <div class="box">${subBody(cur)}${cur.linkUrl ? `<p><a href="${esc(cur.linkUrl)}" target="_blank" rel="noopener">${esc(cur.linkUrl)}</a></p>` : ''}</div>
       <strong>${esc(t('rubric'))}</strong>
       ${RUBRIC.map((c, i) => `<label class="crit"><span>${esc(L(c))} <span class="muted">(0–${c.max})</span></span><input id="f-c${i}" name="c${i}" type="number" min="0" max="${c.max}" step="0.5" required value="${c.max}"></label>`).join('')}
       <label class="field"><span>${esc(t('feedback'))} *</span><textarea id="f-fb" name="feedback" required></textarea></label>
       <div><button class="btn" type="submit">${esc(t('publishGrade'))}</button></div></form>`;
   }
-  return `<div class="panel-h"><h2>${esc(t('tab_grades'))}</h2>${mchip('grades')}</div>
+  return `<div class="panel-h"><h2>${esc(t('tab_grades'))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="pill ${wsum === 100 ? 'ok' : 'warn'}">${esc(t('weightSum'))}: ${wsum} %${wsum === 100 ? '' : ' · ' + esc(t('weightWarn'))}</span>${mchip('grades')}${mchip('weights')}</div></div>
     <div class="grade-grid"><div><h3 style="font-size:1rem;margin-bottom:8px">${esc(t('toGrade'))} (${pending.length})</h3>
       <ul class="queue">${pending.map((s) => { const [ti, who] = label(s); return `<li><button data-act="gradeSub" data-id="${esc(s.id)}" aria-current="${cur && s.id === cur.id}"><strong>${esc(who)}</strong><span class="s">${esc(ti)}</span></button></li>`; }).join('') || `<li class="muted">—</li>`}</ul>
       <h3 style="font-size:1rem;margin:16px 0 8px">${esc(t('graded'))} (${done.length})</h3>
@@ -1014,24 +1161,194 @@ function badgeSvg(locked) {
 }
 
 function tabProgress(p, teacher) {
-  const u = me();
+  const u = me(); const pass = passPct(p.id);
   if (teacher) {
-    const rows = studentsOf(p.id).map((m) => { const pp = person(m.personId); const pr = progressOf(p.id, pp.id); const tm = db.teams.find((x) => x.id === m.teamId);
+    const rows = studentsOf(p.id).map((m) => { const pp = person(m.personId); const pr = progressOf(p.id, pp.id); const g = gradeOf(p.id, pp.id); const tm = db.teams.find((x) => x.id === m.teamId);
       return `<tr><td>${esc(pp.name)}</td><td>${instChip(pp.institutionId)}</td><td>${esc(tm ? tm.name : '—')}</td>
-        <td style="min-width:160px"><div class="bar" style="margin:0"><span style="width:${pr}%"></span></div></td><td class="num">${pr}%</td>
-        <td>${m.badgeAt ? `<span class="pill ok">${ic('award')} ${esc(t('issued'))}</span>` : `<button class="btn small" data-act="badge" data-id="${esc(pp.id)}" ${pr < 100 ? 'disabled' : ''}>${esc(t('issueBadge'))}</button>`}</td></tr>`; }).join('');
+        <td style="min-width:140px"><div class="bar" style="margin:0"><span style="width:${pr}%"></span></div></td><td class="num">${pr}%</td><td class="num">${g.pct}</td>
+        <td>${m.badgeAt ? `<span class="pill ok">${ic('award')} ${esc(t('issued'))}</span>` : `<button class="btn small" data-act="badge" data-id="${esc(pp.id)}" ${g.pct < pass ? 'disabled' : ''}>${esc(t('issueBadge'))}</button>`}</td></tr>`; }).join('');
     return `<div class="panel-h"><h2>${esc(t('progress'))}</h2>${mchip('progress')}</div>
-      <div class="table-wrap"><table><thead><tr><th>${esc(t('student'))}</th><th>${esc(t('institution'))}</th><th>${esc(t('team'))}</th><th>${esc(t('progress'))}</th><th></th><th>${esc(t('badge'))}</th></tr></thead><tbody>${rows || `<tr><td colspan="6" class="muted">—</td></tr>`}</tbody></table></div>`;
+      <p class="muted" style="margin:0 0 10px;font-size:.88rem">${esc(t('passRuleTitle'))}: ${pass} %</p>
+      <div class="table-wrap"><table><thead><tr><th>${esc(t('student'))}</th><th>${esc(t('institution'))}</th><th>${esc(t('team'))}</th><th>${esc(t('progress'))}</th><th></th><th>${esc(t('gradeTotal'))}</th><th>${esc(t('badge'))}</th></tr></thead><tbody>${rows || `<tr><td colspan="7" class="muted">—</td></tr>`}</tbody></table></div>`;
   }
-  const pr = progressOf(p.id, u.id); const m = member(p.id);
+  const pr = progressOf(p.id, u.id); const g = gradeOf(p.id, u.id); const m = member(p.id); const eligible = g.pct >= pass;
   return `<div class="panel-h"><h2>${esc(t('progress'))}</h2>${mchip('progress')}</div>
     <div class="card badge-card" style="margin-bottom:16px">${badgeSvg(!m.badgeAt)}
       <div><h3 style="font-size:1.3rem">${esc(t('badge'))}</h3>
-        <p style="margin:6px 0">${m.badgeAt ? `${esc(t('badgeEarned'))} <strong>${esc(fmt(m.badgeAt, u.tz, { day: 'numeric', month: 'long', year: 'numeric' }))}</strong>` : esc(pr === 100 ? t('badgeReady') : t('badgeLocked'))}</p>
-        <div class="bar"><span style="width:${pr}%"></span></div><div class="bar-label">${pr}% ${esc(t('complete'))}</div></div></div>
+        <p style="margin:6px 0">${m.badgeAt ? `${esc(t('badgeEarned'))} <strong>${esc(fmt(m.badgeAt, u.tz, { day: 'numeric', month: 'long', year: 'numeric' }))}</strong>` : esc(eligible ? t('badgeReady') : `${t('badgeNeedPre')} ${pass}${t('badgeNeedPost')}`)}</p>
+        <div class="bar"><span style="width:${pr}%"></span></div><div class="bar-label">${pr}% ${esc(t('complete'))}</div>
+        <div class="meter" role="img" aria-label="${g.pct} / 100"><span style="width:${Math.min(100, g.pct)}%"></span><i style="left:${pass}%" title="${esc(t('goal'))} ${pass}"></i></div>
+        <div class="bar-label">${esc(t('gradeTotal'))}: ${g.pct} ${esc(t('ofHundred'))} · ${esc(t('goal'))} ${pass}</div></div></div>
     <h3 style="font-size:1.05rem;margin-bottom:8px">${esc(t('checklist'))}</h3>
     <ul class="checklist">${required(p.id).map((a) => { const d = isDone(a, u.id); return `<li><span class="tick ${d ? 'on' : ''}">${d ? ic('check') : ''}</span>
-      <span style="min-width:0">${esc(L(a.title))} <span class="muted" style="font-size:.82rem">· ${esc(t('phase'))} ${a.phase} · ${esc(rel(a.due))}</span></span></li>`; }).join('')}</ul>`;
+      <span style="min-width:0">${esc(L(a.title))} <span class="muted" style="font-size:.82rem">· ${esc(t('phase'))} ${a.phase}${a.weight ? ' · ' + a.weight + ' %' : ''} · ${esc(rel(a.due))}</span></span></li>`; }).join('')}</ul>`;
+}
+
+/* ---------- Entregas con plantilla, muro de videos, plan e informe ---------- */
+function subBody(s) {
+  const a = db.activities.find((x) => x.id === s.activityId);
+  if (a && a.template && s.sections) return a.template.map((sec, i) => `<p><strong>${esc(L(sec))}</strong></p><p style="white-space:pre-wrap">${esc(s.sections[i] || '')}</p>`).join('');
+  return `<p style="white-space:pre-wrap">${esc(s.body)}</p>`;
+}
+
+function submitForm(a, s) {
+  const fields = a.template
+    ? a.template.map((sec, i) => { const id = `f-sub-${a.id}-${i}`; const val = s && s.sections ? s.sections[i] || '' : '';
+      return `<label class="field"><span>${esc(L(sec))} * <span class="muted">(${esc(t('maxWords'))} ${sec.max} ${esc(t('words'))})</span></span>
+        <textarea id="${esc(id)}" name="sec${i}" required data-max="${sec.max}">${esc(val)}</textarea>
+        <small class="wc ${words(val) > sec.max ? 'over' : ''}" data-count="${esc(id)}">${words(val)} / ${sec.max}</small></label>`; }).join('')
+    : `<label class="field"><span>${esc(t('text'))} *</span><textarea id="f-sub-${esc(a.id)}" name="body" required>${s ? esc(s.body) : ''}</textarea></label>`;
+  return `<form class="stack" data-form="submit" data-id="${esc(a.id)}">
+    ${s ? `<p class="muted" style="margin:0;font-size:.84rem">${esc(t('edit'))}</p>` : ''}
+    ${fields}
+    <label class="field"><span>${esc(a.wall ? t('videoLink') + ' *' : t('link'))}</span><input id="f-subl-${esc(a.id)}" name="linkUrl" type="url" placeholder="https://" value="${s ? esc(s.linkUrl) : ''}" ${a.wall ? 'required' : ''}>${a.wall ? `<small>${esc(t('videoHint'))}</small>` : ''}</label>
+    <div><button class="btn" type="submit">${esc(s ? t('update') : t('submit'))}</button></div></form>`;
+}
+
+function wallHint(a, u) {
+  return `<div class="box">${a.minComments ? `<p>${esc(t('commentedOn'))} <strong>${commentsBy(a, u.id)}</strong> ${esc(t('of'))} ${a.minComments} ${esc(t('peers'))}.</p>` : ''}
+    <button class="btn small ghost" data-act="goWall" data-id="${esc(a.id)}">${ic('video')} ${esc(t('tab_wall'))}</button></div>`;
+}
+
+function tabWall(p, teacher) {
+  const u = me();
+  const head = `<div class="panel-h"><h2>${ic('video')} ${esc(t('wallTitle'))}</h2>${mchip('wall')}</div>`;
+  const wallActs = db.activities.filter((a) => a.projectId === p.id && a.wall).sort(byDate('due'));
+  if (!wallActs.length) return head + `<div class="empty">${esc(t('noVideos'))}</div>`;
+  const act = wallActs.find((a) => a.id === ui.wallAct) || wallActs.find((a) => db.submissions.some((s) => s.activityId === a.id)) || wallActs[0];
+  ui.wallAct = act.id;
+  const subs = db.submissions.filter((s) => s.activityId === act.id).sort(byDate('submittedAt'));
+  const mine = teacher ? null : subFor(act, u.id);
+  const cols = teamsOf(p.id).map((tm) => ({ name: t('teamOf') + ' ' + tm.name, subs: subs.filter((s) => teamIdOf(p.id, s.authorId) === tm.id) }));
+  const loose = subs.filter((s) => !teamIdOf(p.id, s.authorId)); if (loose.length) cols.push({ name: t('noTeam'), subs: loose });
+  const card = (s) => {
+    const a = person(s.authorId); const cms = db.comments.filter((c) => c.targetId === s.id).sort(byDate('at')); const likes = s.likes || []; const liked = likes.includes(u.id);
+    const play = `<span>${ic('play')}</span>`;
+    return `<article class="wcard">
+      <div class="post-head">${avatar(a)}<div style="min-width:0"><strong>${esc(inst(a.institutionId).short)}. ${esc(a.name)}</strong><div class="muted" style="font-size:.78rem">${esc(rel(s.submittedAt))}</div></div></div>
+      ${s.linkUrl ? `<a class="vid" href="${esc(s.linkUrl)}" target="_blank" rel="noopener" aria-label="${esc(t('watch'))}">${play}</a>` : `<div class="vid">${play}</div>`}
+      <div class="post-body" style="margin:0">${esc(s.body)}</div>
+      <div class="wact"><button class="like ${liked ? 'on' : ''}" data-act="like" data-id="${esc(s.id)}" aria-pressed="${liked}" aria-label="${esc(t('like'))}">${ic('heart')} ${likes.length}</button><span class="muted">${cms.length} ${esc(t('comments'))}</span></div>
+      <div class="cmts">${cms.map((c) => { const ca = person(c.authorId); return `<div class="cmt"><b>${esc(ca.name)}</b> ${instChip(ca.institutionId)} ${esc(c.body)}</div>`; }).join('')}
+        <form class="cmt-form" data-form="comment" data-id="${esc(s.id)}"><input id="f-cm-${esc(s.id)}" name="body" type="text" required placeholder="${esc(t('writeComment'))}" aria-label="${esc(t('writeComment'))}"><button class="btn small" type="submit">${esc(t('commentBtn'))}</button></form></div>
+    </article>`;
+  };
+  return head + `<p class="muted" style="margin:0 0 10px">${esc(t('wallHelp'))}</p>
+    <div class="row" style="margin-bottom:12px;align-items:end">
+      <label class="field"><span>${esc(t('activity'))}</span><select id="f-wallact" data-change="wallAct">${wallActs.map((a) => `<option value="${esc(a.id)}" ${a.id === act.id ? 'selected' : ''}>${esc(L(a.title))}</option>`).join('')}</select></label>
+      <div style="display:grid;gap:6px;justify-items:start">
+        ${!teacher ? (mine ? `<span class="pill ok">${esc(t('yourPost'))}</span>` : `<button class="btn" data-act="postWall" data-id="${esc(act.id)}">${ic('plus')} ${esc(t('publishVideo'))}</button>`) : ''}
+        ${!teacher && act.minComments ? `<span class="muted" style="font-size:.85rem">${esc(t('commentedOn'))} <strong>${commentsBy(act, u.id)}</strong> ${esc(t('of'))} ${act.minComments} ${esc(t('peers'))}</span>` : ''}</div></div>
+    ${act.instructions ? `<div class="box" style="margin-bottom:14px"><p style="white-space:pre-wrap;margin:0">${esc(act.instructions)}</p></div>` : ''}
+    <div class="wall">${cols.map((c) => `<section class="wcol"><h3><span>${esc(c.name)}</span><span class="muted">${c.subs.length}</span></h3>${c.subs.map(card).join('') || `<div class="empty" style="padding:10px;font-size:.85rem">${esc(t('noVideos'))}</div>`}</section>`).join('')}</div>`;
+}
+
+/* ---------- Descargas ---------- */
+function downloadFile(name, mime, content) {
+  try {
+    const url = URL.createObjectURL(new Blob([content], { type: mime + ';charset=utf-8' }));
+    const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000); toast(t('downloaded'));
+  } catch (e) { toast('No se pudo descargar el archivo.'); }
+}
+/* .doc en HTML: Word lo abre y se puede editar */
+const wordDoc = (title, body) => `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${esc(title)}</title>
+<style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt}h1{font-size:18pt;color:#1b2a4b}h3{font-size:13pt;color:#1b2a4b;margin-top:16pt}table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:4px 6px;vertical-align:top;text-align:left}th{background:#e9edf4}</style></head><body><h1>${esc(title)}</h1>${body}</body></html>`;
+const slug = (s) => String(s).toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'coil';
+
+/* ---------- Plan de colaboración ---------- */
+const deliveryOf = (a) => t(a.kind === 'session' ? 'd_session' : a.template ? 'd_report' : a.wall ? 'd_video' : 'd_text');
+function planBody(p) {
+  const plan = p.plan || {}; const ii = plan.inst || {}; const tools = plan.tools || {}; const ods = ui.lang === 'es' ? ODS_ES : ODS_EN;
+  const d = (s) => (s ? fmt(s + 'T12:00:00Z', 'UTC', { day: 'numeric', month: 'short', year: 'numeric' }) : '—');
+  const list = (arr) => (arr.length ? `<ul>${arr.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '<p>—</p>');
+  const courses = p.institutions.map((i) => {
+    const n = studentsOf(p.id).filter((m) => person(m.personId).institutionId === i).length;
+    const tch = teachersOf(p.id).map((m) => person(m.personId)).filter((x) => x.institutionId === i).map((x) => x.name).join(', ') || '—';
+    return `<tr><td>${esc(inst(i).short)} · ${esc(inst(i).name)}</td><td>${esc(CITY[inst(i).tz] || inst(i).tz)}, ${esc(inst(i).country)}</td><td>${esc(p.courses[i] || '—')}</td><td>${n}</td><td>${esc((ii[i] || {}).schedule || '—')}</td><td>${esc(tch)}</td></tr>`;
+  }).join('');
+  const acts = db.activities.filter((a) => a.projectId === p.id).sort(byDate('due'));
+  const sum = acts.reduce((n, a) => n + (a.weight || 0), 0);
+  const sched = acts.map((a) => `<tr><td>${a.phase} · ${esc(L(PHASES[a.phase]))}</td><td>${esc(L(a.title))}</td><td>${esc(fmt(a.due, me().tz, { day: 'numeric', month: 'short', year: 'numeric' }))}</td><td>${a.weight ? a.weight + ' %' : '—'}</td><td>${esc(deliveryOf(a))}</td><td>${esc(t('mode_' + a.mode))}</td></tr>`).join('');
+  const toolRows = ['content', 'meet', 'chat', 'collab'].map((k) => { const x = tools[k] || {};
+    return `<tr><td>${esc(t('purp_' + k))}</td><td>${esc(x.tool || '—')}</td><td>${x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.url)}</a>` : '—'}</td></tr>`; }).join('');
+  return `<div class="plan">
+    <h3>${esc(t('courses'))}</h3><div class="table-wrap"><table><thead><tr><th>${esc(t('institution'))}</th><th>${esc(t('location'))}</th><th>${esc(t('course'))}</th><th>${esc(t('studentsN'))}</th><th>${esc(t('classSched'))}</th><th>${esc(t('teacher'))}</th></tr></thead><tbody>${courses}</tbody></table></div>
+    <h3>${esc(t('calendars'))}</h3><div class="table-wrap"><table><thead><tr><th></th>${p.institutions.map((i) => `<th>${esc(inst(i).short)}</th>`).join('')}</tr></thead><tbody>
+      <tr><td>${esc(t('semester'))}</td>${p.institutions.map((i) => `<td>${d((ii[i] || {}).semStart)} – ${d((ii[i] || {}).semEnd)}</td>`).join('')}</tr>
+      <tr><td>${esc(t('special'))}</td>${p.institutions.map((i) => `<td>${esc((ii[i] || {}).breaks || '—')}</td>`).join('')}</tr></tbody></table></div>
+    <p><strong>${esc(t('window'))}:</strong> ${d(p.startsOn)} – ${d(p.endsOn)}</p>
+    <h3>${esc(t('objectives'))}</h3><p style="white-space:pre-wrap">${esc(plan.objectives || '—')}</p>
+    <h3>${esc(t('ods'))}</h3>${list((plan.ods || []).map((n) => n + '. ' + (ods[n - 1] || '')))}
+    <h3>${esc(t('strategy'))}</h3>${list((plan.strategy || []).map((k) => t('strat_' + k)))}
+    <h3>${esc(t('schedule'))}</h3><div class="table-wrap"><table><thead><tr><th>${esc(t('phase'))}</th><th>${esc(t('activity'))}</th><th>${esc(t('dueShort'))}</th><th>${esc(t('weight'))}</th><th>${esc(t('delivery'))}</th><th>${esc(t('mode'))}</th></tr></thead><tbody>${sched}
+      <tr><td colspan="3"><strong>${esc(t('total'))}</strong></td><td colspan="3"><strong>${sum} %</strong>${sum !== 100 ? ` · ${esc(t('weightWarn'))}` : ''}</td></tr></tbody></table></div>
+    <h3>${esc(t('toolsTitle'))}</h3><div class="table-wrap"><table><thead><tr><th>${esc(t('purpose'))}</th><th>${esc(t('tool'))}</th><th>URL</th></tr></thead><tbody>${toolRows}</tbody></table></div>
+    <h3>${esc(t('passRuleTitle'))}</h3><p>${esc(t('passRule'))} <strong>${passPct(p.id)}</strong>${esc(t('passRule2'))}</p></div>`;
+}
+
+function planForm(p) {
+  const plan = p.plan || {}; const ii = plan.inst || {}; const tools = plan.tools || {}; const ods = ui.lang === 'es' ? ODS_ES : ODS_EN;
+  const chk = (name, val, label, on) => `<label class="check"><input type="checkbox" data-multi name="${name}" value="${val}" id="f-pl-${name}-${val}" ${on ? 'checked' : ''}> ${esc(label)}</label>`;
+  return `<form class="card stack" data-form="plan">
+    <label class="field"><span>${esc(t('objectives'))}</span><textarea id="f-pl-obj" name="objectives">${esc(plan.objectives || '')}</textarea></label>
+    <div class="field"><span>${esc(t('ods'))}</span><div class="chk-grid">${ods.map((n, i) => chk('ods', i + 1, (i + 1) + '. ' + n, (plan.ods || []).includes(i + 1))).join('')}</div></div>
+    <div class="field"><span>${esc(t('strategy'))}</span><div class="chk-grid">${['abpro', 'abi', 'abprob'].map((k) => chk('strategy', k, t('strat_' + k), (plan.strategy || []).includes(k))).join('')}</div></div>
+    ${p.institutions.map((i) => { const x = ii[i] || {}; return `<div class="card" style="background:var(--surface-2)"><strong>${esc(inst(i).short)} · ${esc(inst(i).name)}</strong><div class="row" style="margin-top:8px">
+      <label class="field"><span>${esc(t('classSched'))}</span><input id="f-pl-sch-${esc(i)}" name="sch_${esc(i)}" type="text" value="${esc(x.schedule || '')}"></label>
+      <label class="field"><span>${esc(t('semester'))} · ${esc(t('start'))}</span><input id="f-pl-ss-${esc(i)}" name="ss_${esc(i)}" type="date" value="${esc(x.semStart || '')}"></label>
+      <label class="field"><span>${esc(t('semester'))} · ${esc(t('end'))}</span><input id="f-pl-se-${esc(i)}" name="se_${esc(i)}" type="date" value="${esc(x.semEnd || '')}"></label>
+      <label class="field"><span>${esc(t('special'))}</span><input id="f-pl-br-${esc(i)}" name="br_${esc(i)}" type="text" value="${esc(x.breaks || '')}"></label></div></div>`; }).join('')}
+    ${['content', 'meet', 'chat', 'collab'].map((k) => { const x = tools[k] || {}; return `<div class="row">
+      <label class="field"><span>${esc(t('purp_' + k))}</span><input id="f-pl-t-${k}" name="tool_${k}" type="text" value="${esc(x.tool || '')}"></label>
+      <label class="field"><span>URL</span><input id="f-pl-u-${k}" name="url_${k}" type="url" placeholder="https://" value="${esc(x.url || '')}"></label></div>`; }).join('')}
+    <div class="row"><label class="field"><span>${esc(t('passPct'))}</span><input id="f-pl-pass" name="passPct" type="number" min="1" max="100" value="${passPct(p.id)}"></label></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="submit">${esc(t('save'))}</button><button class="btn ghost" type="button" data-act="form" data-form="plan">${esc(t('cancel'))}</button></div></form>`;
+}
+
+function tabPlan(p, teacher) {
+  return `<div class="panel-h"><h2>${esc(t('planTitle'))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${mchip('plan')}
+      <button class="btn ghost small" data-act="downloadPlan">${ic('file')} ${esc(t('downloadPlan'))}</button>
+      ${teacher && ui.form !== 'plan' ? `<button class="btn small" data-act="form" data-form="plan">${ic('pen')} ${esc(t('editPlan'))}</button>` : ''}</div></div>
+    ${teacher && ui.form === 'plan' ? planForm(p) : planBody(p)}`;
+}
+
+/* ---------- Informe de evidencias ---------- */
+function reportData(p) {
+  const pass = passPct(p.id);
+  const studs = studentsOf(p.id).map((m) => { const pp = person(m.personId); const g = gradeOf(p.id, pp.id); const tm = db.teams.find((x) => x.id === m.teamId); return { m, pp, g, team: tm ? tm.name : '—', ok: g.pct >= pass }; });
+  const acts = db.activities.filter((a) => a.projectId === p.id && a.weight > 0).sort(byDate('due'));
+  const rows = acts.map((a) => { const subs = db.submissions.filter((s) => s.activityId === a.id); const evs = subs.map((s) => evalFor(s)).filter(Boolean);
+    return { a, received: subs.length, expected: a.mode === 'team' ? teamsOf(p.id).length : studs.length, graded: evs.length, avg: evs.length ? evs.reduce((n, e) => n + e.score, 0) / evs.length : null }; });
+  return { pass, studs, acts, rows, ok: studs.filter((x) => x.ok).length, badges: studs.filter((x) => x.m.badgeAt).length };
+}
+const SUMMARY = {
+  es: (p, d) => `La colaboración «${L(p.title)}» reunió a ${d.studs.length} estudiantes (${p.institutions.map((i) => inst(i).short + ': ' + d.studs.filter((x) => x.pp.institutionId === i).length).join(', ')}) en ${teamsOf(p.id).length} equipos internacionales. Incluyó ${d.acts.length} actividades calificadas (${d.acts.map((a) => L(a.title) + ' ' + a.weight + ' %').join('; ')}). ${d.ok} de ${d.studs.length} estudiantes alcanzaron al menos ${d.pass} % de la nota total y se emitieron ${d.badges} insignias.`,
+  en: (p, d) => `The collaboration “${L(p.title)}” brought together ${d.studs.length} students (${p.institutions.map((i) => inst(i).short + ': ' + d.studs.filter((x) => x.pp.institutionId === i).length).join(', ')}) in ${teamsOf(p.id).length} international teams. It included ${d.acts.length} graded activities (${d.acts.map((a) => L(a.title) + ' ' + a.weight + '%').join('; ')}). ${d.ok} of ${d.studs.length} students reached at least ${d.pass}% of the total grade and ${d.badges} badges were issued.`,
+};
+function reportBody(p) {
+  const d = reportData(p); const evid = db.activities.filter((a) => a.projectId === p.id && a.wall).sort(byDate('due'));
+  return `<div class="plan">
+    <h3>${esc(t('reportSummary'))}</h3><p>${esc(SUMMARY[ui.lang](p, d))}</p>
+    <h3>${esc(t('participants'))}</h3><div class="table-wrap"><table><thead><tr><th>${esc(t('student'))}</th><th>${esc(t('institution'))}</th><th>${esc(t('team'))}</th><th>${esc(t('gradeTotal'))} (${esc(t('ofHundred'))})</th><th>${esc(t('status'))}</th><th>${esc(t('badge'))}</th></tr></thead><tbody>
+      ${d.studs.map((x) => `<tr><td>${esc(x.pp.name)}</td><td>${esc(inst(x.pp.institutionId).short)}</td><td>${esc(x.team)}</td><td>${x.g.pct}</td><td>${esc(x.ok ? t('passed') : t('notYet'))}</td><td>${x.m.badgeAt ? esc(fmt(x.m.badgeAt, me().tz, { day: 'numeric', month: 'short', year: 'numeric' })) : '—'}</td></tr>`).join('')}</tbody></table></div>
+    <h3>${esc(t('tab_activities'))}</h3><div class="table-wrap"><table><thead><tr><th>${esc(t('activity'))}</th><th>${esc(t('weight'))}</th><th>${esc(t('received'))}</th><th>${esc(t('graded'))}</th><th>${esc(t('avg'))}</th></tr></thead><tbody>
+      ${d.rows.map((r) => `<tr><td>${esc(L(r.a.title))}</td><td>${r.a.weight} %</td><td>${r.received}/${r.expected}</td><td>${r.graded}</td><td>${r.avg == null ? '—' : r.avg.toFixed(1) + '/10'}</td></tr>`).join('')}</tbody></table></div>
+    <h3>${esc(t('evidence'))}</h3>${evid.map((a) => `<p><strong>${esc(L(a.title))}</strong></p><ul>${db.submissions.filter((s) => s.activityId === a.id).map((s) => { const pp = person(s.authorId);
+      return `<li>${esc(inst(pp.institutionId).short)}. ${esc(pp.name)}${s.linkUrl ? ` · <a href="${esc(s.linkUrl)}" target="_blank" rel="noopener">${esc(s.linkUrl)}</a>` : ''}</li>`; }).join('') || '<li>—</li>'}</ul>`).join('') || '<p>—</p>'}</div>`;
+}
+function tabReport(p) {
+  return `<div class="panel-h"><h2>${esc(t('reportTitle'))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${mchip('report')}
+      <button class="btn ghost small" data-act="downloadCsv">${ic('chart')} ${esc(t('downloadCsv'))}</button>
+      <button class="btn small" data-act="downloadReport">${ic('file')} ${esc(t('downloadReport'))}</button></div></div>${reportBody(p)}`;
+}
+/* CSV de notas (se abre en Excel). Los textos que parecen fórmulas se neutralizan. */
+function gradesCsv(p) {
+  const d = reportData(p); const q = (v) => { let s = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
+  const head = [t('student'), 'Email', t('institution'), t('team')].concat(d.acts.map((a) => `${L(a.title)} (${a.weight}%)`), [`${t('gradeTotal')} (${t('ofHundred')})`, t('status'), t('badge')]);
+  const rows = d.studs.map((x) => [x.pp.name, x.pp.email, inst(x.pp.institutionId).short, x.team]
+    .concat(d.acts.map((a) => { const ev = evalFor(subFor(a, x.pp.id)); return ev ? ev.score : ''; }), [x.g.pct, x.ok ? t('passed') : t('notYet'), x.m.badgeAt ? x.m.badgeAt.slice(0, 10) : '']));
+  return [head].concat(rows).map((r) => r.map(q).join(',')).join('\r\n');
 }
 
 function modal() {
@@ -1049,8 +1366,8 @@ function modal() {
         <label class="field"><span>${esc(t('titleOther'))}</span><input id="f-p-title2" name="titleOther" type="text"></label>
         <div class="row"><label class="field"><span>${esc(t('courseEpn'))} *</span><input id="f-p-c1" name="courseEpn" type="text" required></label>
           <label class="field"><span>${esc(t('coursePartner'))} *</span><input id="f-p-c2" name="coursePartner" type="text" required></label></div>
-        <div class="row"><label class="field"><span>${esc(t('start'))} *</span><input id="f-p-start" name="start" type="date" required value="${today}"></label>
-          <label class="field"><span>${esc(t('end'))} *</span><input id="f-p-end" name="end" type="date" required value="${later}"></label></div>
+        <div class="row"><label class="field"><span>${esc(t('window'))}: ${esc(t('start'))} *</span><input id="f-p-start" name="start" type="date" required value="${today}"></label>
+          <label class="field"><span>${esc(t('window'))}: ${esc(t('end'))} *</span><input id="f-p-end" name="end" type="date" required value="${later}"></label></div>
         <label class="field"><span>${esc(t('description'))}</span><textarea id="f-p-desc" name="description"></textarea></label>
         <div class="row"><label class="field"><span>${esc(t('meetUrl'))}</span><input id="f-p-meet" name="meetUrl" type="url" placeholder="https://"></label>
           <label class="field"><span>${esc(t('driveUrl'))}</span><input id="f-p-drive" name="driveUrl" type="url" placeholder="https://"></label></div>
@@ -1087,11 +1404,17 @@ document.addEventListener('change', (e) => {
 document.addEventListener('submit', (e) => {
   const form = e.target.closest('[data-form]'); if (!form) return;
   e.preventDefault();
-  const f = Object.fromEntries(new FormData(form).entries());
-  form.querySelectorAll('input[type=checkbox]').forEach((c) => { f[c.name] = c.checked; });
+  const fd = new FormData(form); const f = Object.fromEntries(fd.entries());
+  new Set([...fd.keys()]).forEach((k) => { f[k + '[]'] = fd.getAll(k); });
+  form.querySelectorAll('input[type=checkbox]:not([data-multi])').forEach((c) => { f[c.name] = c.checked; });
   Object.keys(f).forEach((k) => { if (typeof f[k] === 'string') f[k] = f[k].trim(); });
   if ([...form.querySelectorAll('[required]')].some((x) => !String(f[x.name] || '').trim())) { toast(t('need')); return; }
-  actions[form.dataset.form](f, form); render();
+  if (actions[form.dataset.form](f, form) !== false) render();
+});
+document.addEventListener('input', (e) => {
+  const el = e.target; if (!el.matches || !el.matches('textarea[data-max]')) return;
+  const n = words(el.value); const c = document.querySelector(`[data-count="${el.id}"]`);
+  if (c) { c.textContent = n + ' / ' + el.dataset.max; c.classList.toggle('over', n > +el.dataset.max); }
 });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ui.modal) { ui.modal = null; render(); } });
 setInterval(() => document.querySelectorAll('[data-clock]').forEach((el) => {

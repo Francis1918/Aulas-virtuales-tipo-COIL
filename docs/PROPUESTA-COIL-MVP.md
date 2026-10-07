@@ -63,7 +63,12 @@ Diagrama editable: *"COIL MVP - Arquitectura Moodle-first (recomendada)"* en el 
 | Reflexiones | Tarea de texto en línea sin calificación (o plugin *Journal*) | Una por fase, con pregunta guía bilingüe |
 | Calificaciones | Calificador + **calificación avanzada: Rúbrica** | Rúbrica compartida, diseñada por ambos docentes |
 | Progreso | **Finalización de actividad y de curso** | Requerir entrega o reflexión enviada |
-| Badge / finalización | **Insignias** (compatibles con Open Badges) | Se emite automáticamente al completar el curso |
+| Badge / finalización | **Insignias** (compatibles con Open Badges) | Criterio: **calificación mínima del curso** (70 %); se emite automáticamente |
+| Pesos por actividad (20/30/30/20) | Calificador con **categorías ponderadas** | Una categoría por actividad con su peso; el total del curso es la nota ponderada |
+| Muro de videos (Padlet) | Actividad **Base de datos** con plantilla de galería, comentarios y valoraciones; o foro con enlaces | Un campo URL por video; comentarios habilitados; vista por grupo |
+| Plan de colaboración (Word) | **Página o Libro** del curso, generado desde la plantilla | Se completa una vez por curso; la exportación a Word es opcional |
+| Reporte con límite de palabras | **Tarea de texto en línea** con límite de palabras | Una tarea por sección o una sola con instrucciones por sección |
+| Informe de evidencias | **Informes del curso** + exportar el Calificador a CSV/XLSX | Los videos y las capturas quedan como enlaces |
 | Zoom / Teams | Plugin `mod_zoom` o actividad URL | Opcional |
 | Google Drive | Repositorios Google Drive / OneDrive | Opcional |
 | Bilingüe | Paquetes de idioma + filtro **Contenido multilenguaje** | `<span lang="es" class="multilang">` / `lang="en"` |
@@ -80,7 +85,7 @@ Solo si no es posible usar Moodle EPN (políticas, versión antigua sin LTI 1.3,
 - **Módulo LTI 1.3 como herramienta**, para que más adelante Moodle u otro LMS la lancen (ver D).
 - **Despliegue:** un contenedor + la base. Sin microservicios, colas ni Kubernetes.
 
-### A.4 Modelo de datos mínimo (12 tablas)
+### A.4 Modelo de datos mínimo (14 tablas)
 
 Sirve para las dos rutas: en la Ruta 1 es el **modelo de dominio** (cada tabla corresponde a tablas de Moodle; ver comentarios `Moodle:` en el SQL); en la Ruta 2 es el **esquema real**.
 
@@ -102,15 +107,16 @@ institution 1─* person 1─* project_member *─1 project
 | `project` | El aula COIL | Título bilingüe en jsonb; enlaces opcionales a Zoom/Teams y Drive |
 | `project_member` | Rol y equipo de cada persona | Rol por proyecto (no global); `badge_issued_at` evita una tabla de insignias |
 | `team` | Equipos mixtos | Sin tabla intermedia: el equipo vive en `project_member.team_id` |
-| `activity` | Entrega, reflexión o sesión | `phase` 1–4 y `kind` evitan tablas por tipo; rúbrica en jsonb |
+| `activity` | Entrega, reflexión o sesión | `phase` 1–4 y `kind` evitan tablas por tipo; `weight` (% de la nota), `wall` y `min_comments` para el muro; `template` para reportes por secciones; rúbrica en jsonb |
 | `submission` | Entregas | Una fila por equipo o por persona (índices únicos parciales) |
 | `evaluation` | Nota + rúbrica + retroalimentación | Separada de la entrega para permitir coevaluación más adelante |
+| `comment`, `submission_like` | Comentarios y reacciones del muro | Cuelgan de `submission`; sirven también para exigir comentarios mínimos |
 | `reflection` | Diario intercultural | Una por fase; visibilidad privada / docentes / equipo |
 | `post` | Foro | `team_id` nulo = canal general; `lang` permite ofrecer "Traducir" |
 | `resource` | Materiales | Enlaces con idioma |
 | `domain_event` | Eventos para integraciones | Patrón *outbox*: base para webhooks y devolución de notas |
 
-El **progreso** no se almacena: se calcula (vista `student_progress`). Así no se desincroniza.
+El **progreso** y la **nota ponderada** no se almacenan: se calculan (vistas `student_progress` y `student_grade`). Así no se desincronizan. El esquema tiene ahora 14 tablas y 2 vistas.
 
 Diagrama ER editable: *"COIL MVP - Modelo de datos"* en el [tablero FigJam](https://www.figma.com/board/H4PMfd2USrRdSqSxnSOyY5).
 
@@ -194,9 +200,9 @@ Diagrama editable: *"COIL MVP - Flujos de usuario"* en el tablero FigJam.
 
 | Como… | Prueba |
 |---|---|
-| Francis Bravo (estudiante EPN) | Panel con fechas dobles, entrega de equipo, foro del equipo, reflexión por fase, notas, progreso e insignia bloqueada |
-| Sanne Bakker (estudiante PU) | Lo mismo en inglés y con hora de Ámsterdam |
-| María Cevallos (docente EPN) | Crear proyecto con plantilla, cargar estudiantes por CSV, armar equipos mixtos, crear actividad, calificar con rúbrica, emitir insignia |
+| Francis Bravo (estudiante EPN) | Panel, **muro de videos** (le falta comentar a un compañero), entrega de equipo con **reporte por secciones y contador de palabras**, **nota ponderada con meta del 70 %**, insignia bloqueada |
+| Valeria Ortiz (estudiante de la universidad socia) | Lo mismo desde el otro lado, con hora de Chihuahua; cambia a inglés con el botón EN |
+| María Cevallos (docente EPN) | Crear proyecto con plantilla (pesos 20/30/30/20), cargar estudiantes por CSV, armar equipos mixtos, crear actividad con peso y muro, calificar con rúbrica, **editar el plan de colaboración**, **descargar plan e informe en Word y notas en CSV**, emitir insignia (solo si la nota llega al mínimo) |
 | Cualquiera | Botón *Equivalencias Moodle*: muestra en cada pantalla qué módulo de Moodle la implementa |
 
 **Estructura del código** (secciones numeradas en el archivo):
@@ -209,6 +215,28 @@ Diagrama editable: *"COIL MVP - Flujos de usuario"* en el tablero FigJam.
 7. Render y eventos: un único *listener* por tipo de evento (`data-act`, `data-form`, `data-change`).
 
 **Límites conocidos del prototipo:** no hay autenticación real, los datos no se comparten entre navegadores, y la fecha de las actividades creadas desde la plantilla se distribuye automáticamente entre inicio y fin. Son límites aceptados: el prototipo valida flujos y lenguaje visual, no es el producto.
+
+---
+
+### C.1 Ajustes tras revisar la documentación del programa (plan, reporte y evidencias)
+
+Se revisaron el plan de colaboración, el modelo de reporte y el documento de evidencias del programa Global Shared Learning. Lo que ya hacían con Word, Padlet y Slack pasa ahora a la plataforma:
+
+| Hallazgo en los documentos | Cambio en el prototipo y el modelo de datos |
+|---|---|
+| Cuatro actividades con peso: rompehielo 20 %, colaborativa 30 % + 30 %, reflexión 20 % | `activity.weight`; nota total ponderada (`student_grade`) y aviso si los pesos no suman 100 % |
+| Aprueban y reciben insignia quienes llegan al 70 % | `project.pass_pct`; la insignia solo se puede emitir si la nota alcanza el mínimo |
+| Videos de 1 a 3 minutos publicados en Padlet, una columna por equipo | Pestaña **Muro**: tarjetas por equipo, "me gusta", comentarios; el video se enlaza (YouTube, OneDrive, Teams) y no se aloja |
+| "Comenta al menos a otros dos compañeros" | `activity.min_comments`; la actividad no cuenta como completa hasta cumplirlo |
+| Plan de colaboración en Word (cursos, calendarios, objetivos, ODS, estrategia, cronograma, herramientas) | Pestaña **Plan**: formulario que genera el documento y lo descarga en Word; el cronograma sale de las actividades |
+| Semestres que no coinciden y una ventana común de colaboración | `project.starts_on/ends_on` = ventana; calendario y horario de clase por universidad dentro de `project.plan` |
+| Reporte con secciones y límite de palabras (3 páginas, 500 palabras por discusión) | `activity.template` y `submission.sections`; contador de palabras en vivo y bloqueo al exceder |
+| Documento de evidencias con resumen, participantes y capturas | Pestaña **Informe** (docente): resumen automático, participantes con nota, actividades con promedio, enlaces a los videos; descarga en Word y notas en CSV |
+| Ambas universidades hispanohablantes (Quito y Chihuahua) | Los datos de ejemplo pasan a español y a una hora de diferencia; el soporte ES/EN se mantiene para futuros socios |
+
+**Pendiente de confirmar con el ingeniero:** quién emite la insignia (EPN o el programa), quién califica cada actividad (cada docente a los suyos o entre ambos), si los videos pueden alojarse en la plataforma y qué consentimiento de imagen existe.
+
+**No subir al repositorio** los documentos originales del programa: incluyen datos de contacto y claves de acceso de los tableros.
 
 ---
 
