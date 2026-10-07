@@ -154,10 +154,19 @@ svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-
 .integr .cap { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
 
 .phases { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; counter-reset: ph; }
-.phases li { background: var(--surface); border: 1px solid var(--line); padding: 10px 12px; font-size: .86rem; position: relative; }
+.phases li { background: var(--surface); border: 1px solid var(--line); font-size: .86rem; position: relative; }
+.phase-btn { display: block; width: 100%; height: 100%; text-align: left; background: none; border: 0; padding: 10px 12px; cursor: pointer; color: inherit; border-radius: inherit; }
+.phase-btn:hover { background: var(--surface-2); }
 .phases li .n { font-family: var(--font-head); font-size: 1.15rem; display: block; }
+.phases li .cnt { display: block; margin-top: 2px; font-size: .75rem; color: var(--muted); }
 .phases li.done { color: var(--muted); }
-.phases li.current { border-color: var(--navy-2); box-shadow: inset 0 -4px 0 var(--gold); }
+.phases li.current { box-shadow: inset 0 -4px 0 var(--gold); }
+.phases li.sel { border-color: var(--navy-2); outline: 2px solid var(--navy-2); outline-offset: -2px; background: var(--surface-2); }
+:root[data-theme="dark"] .phases li.sel { border-color: var(--gold); outline-color: var(--gold); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .phases li.sel { border-color: var(--gold); outline-color: var(--gold); } }
+.phase-head { margin-bottom: 12px; }
+.phase-head h3 { font-size: 1.25rem; }
+.phase-head .sub { color: var(--muted); font-size: .88rem; margin-top: 2px; }
 @media (max-width: 680px) { .phases { grid-template-columns: repeat(2, minmax(0,1fr)); } }
 
 .tabs { display: flex; gap: 2px; margin-top: 18px; border-bottom: 2px solid var(--line); overflow-x: auto; scrollbar-width: thin; }
@@ -379,6 +388,7 @@ const T = {
     videoTooLong: 'El video dura más de lo permitido', videoTooBig: 'El archivo supera el tamaño máximo', notVideo: 'El archivo no es un video.', maxLabel: 'Máximo', writeSomething: 'Escribe algo…', hostedVideo: 'Video alojado en la plataforma',
     meetLinks: 'Enlaces', editLinks: 'Editar enlaces', linkLabel: 'Nombre', t_links: 'Enlaces guardados', meetLinkHelp: 'Pon el enlace de la herramienta que usen para reunirse o compartir archivos: Teams, Zoom, Google Meet, Webex u otra.',
     sessionUrl: 'Enlace de la reunión (solo sesiones)', meetGeneric: 'Reunión virtual',
+    activitiesN: 'actividades', completedN: 'completadas', noActsPhase: 'Esta fase todavía no tiene actividades.', m_phases: 'Una sección del curso por fase (formato por temas), con las actividades dentro',
   },
   en: {
     brandSub: 'International collaboration', navHome: 'Dashboard', navCal: 'Calendar', viewAs: 'View as',
@@ -448,6 +458,7 @@ const T = {
     videoTooLong: 'The video is longer than allowed', videoTooBig: 'The file exceeds the maximum size', notVideo: 'The file is not a video.', maxLabel: 'Maximum', writeSomething: 'Write something…', hostedVideo: 'Video hosted on the platform',
     meetLinks: 'Links', editLinks: 'Edit links', linkLabel: 'Name', t_links: 'Links saved', meetLinkHelp: 'Add the link of the tool you use to meet or share files: Teams, Zoom, Google Meet, Webex or any other.',
     sessionUrl: 'Meeting link (sessions only)', meetGeneric: 'Virtual meeting',
+    activitiesN: 'activities', completedN: 'completed', noActsPhase: 'This phase has no activities yet.', m_phases: 'One course section per phase (topics format), with the activities inside',
   },
 };
 
@@ -600,7 +611,7 @@ function load() { try { const raw = localStorage.getItem(LS_KEY); return raw ? J
 function save() { try { localStorage.setItem(LS_KEY, JSON.stringify({ db, ui: { ...ui, modal: null, toast: null } })); } catch (e) { /* almacenamiento no disponible */ } }
 const stored = load();
 let db = stored ? stored.db : seed();
-let ui = Object.assign({ userId: 's1', lang: 'es', view: 'home', projectId: null, tab: 'activities', openAct: null, wallAct: null, moodle: false,
+let ui = Object.assign({ userId: 's1', lang: 'es', view: 'home', projectId: null, tab: 'activities', openAct: null, wallAct: null, phase: null, moodle: false,
   channel: 'general', replyTo: null, reflPhase: null, gradeSub: null, form: null, modal: null }, stored ? stored.ui : {});
 
 /* =====================================================================
@@ -787,7 +798,7 @@ const actions = {
       mk(0.92, 4, 'session', 'team', 'Presentación final', 'Final presentation');
       mk(1.0, 4, 'task', 'individual', 'Reflexión final en video (1–3 min)', 'Final reflection video (1–3 min)', { weight: 20, wall: true, minComments: 0, videoMax: 3 });
     }
-    Object.assign(ui, { view: 'project', projectId: pid, tab: 'teams', modal: null });
+    Object.assign(ui, { view: 'project', projectId: pid, tab: 'teams', phase: null, modal: null });
     toast(t('t_proj'));
   },
   // POST /api/v1/projects/:id/activities
@@ -796,7 +807,7 @@ const actions = {
       title: ui.lang === 'es' ? { es: f.title, en: f.titleOther || f.title } : { en: f.title, es: f.titleOther || f.title },
       instructions: f.instructions, due: zonedToUtc(f.due, me().tz), weight: Math.max(0, +f.weight || 0), wall: !!f.wall, minComments: f.wall ? Math.max(0, +f.minComments || 0) : 0,
       videoMax: f.wall ? Math.max(0.5, +f.videoMax || 3) : undefined, grading: parseGrading(f.gm), url: safeUrl(f.url) });
-    ui.form = null; toast(t('t_act'));
+    ui.phase = +f.phase; ui.form = null; toast(t('t_act'));
   },
   // POST /api/v1/activities/:id/submissions  (si ya existe: PATCH)
   submit(f, el) {
@@ -872,7 +883,8 @@ const actions = {
 };
 const clickActions = {
   go: (d) => Object.assign(ui, { view: d.view, projectId: d.view === 'home' || d.view === 'calendar' ? null : ui.projectId }),
-  open: (d) => Object.assign(ui, { view: 'project', projectId: d.id, tab: 'activities', openAct: null, channel: 'general', gradeSub: null, form: null }),
+  phase: (d) => Object.assign(ui, { phase: +d.phase, tab: 'activities', openAct: null, form: null, gradeSub: null }),
+  open: (d) => Object.assign(ui, { view: 'project', projectId: d.id, tab: 'activities', phase: null, openAct: null, channel: 'general', gradeSub: null, form: null }),
   tab: (d) => Object.assign(ui, { tab: d.tab, form: null }),
   lang: (d) => { ui.lang = d.lang; },
   moodle: () => { ui.moodle = !ui.moodle; },
@@ -1003,7 +1015,7 @@ function viewCalendar() {
 
 function viewProject() {
   const p = project(ui.projectId); if (!p) { ui.view = 'home'; return viewHome(); }
-  const ph = currentPhase(p.id); const teacher = isTeacher(p.id);
+  const ph = currentPhase(p.id); const teacher = isTeacher(p.id); const selPhase = ui.phase || ph;
   const tabs = [['activities', 'file'], ['wall', 'video'], ['teams', 'users'], ['forum', 'chat'], ['reflections', 'pen'], ['resources', 'book'], ['grades', 'grade'], ['progress', 'chart'], ['plan', 'list'], ['report', 'folder']].filter(([k]) => k !== 'report' || teacher);
   const panels = { activities: tabActivities, wall: tabWall, teams: tabTeams, forum: tabForum, reflections: tabReflections, resources: tabResources, grades: tabGrades, progress: tabProgress, plan: tabPlan, report: tabReport };
   if (!panels[ui.tab] || (ui.tab === 'report' && !teacher)) ui.tab = 'activities';
@@ -1025,8 +1037,10 @@ function viewProject() {
       </div>
     </section>
     ${teacher && ui.form === 'links' ? linksForm(p) : ''}
-    <ol class="phases" aria-label="${esc(t('phase'))}">${[1, 2, 3, 4].map((n) => `<li class="${n < ph ? 'done' : n === ph ? 'current' : ''}" ${n === ph ? 'aria-current="step"' : ''}>
-      <span class="n">${n < ph ? ic('check') : ''} ${esc(t('phase'))} ${n}</span>${esc(L(PHASES[n]))}</li>`).join('')}</ol>
+    <ol class="phases" aria-label="${esc(t('phase'))}">${[1, 2, 3, 4].map((n) => { const cnt = db.activities.filter((x) => x.projectId === p.id && x.phase === n).length;
+      return `<li class="${n < ph ? 'done' : n === ph ? 'current' : ''} ${n === selPhase ? 'sel' : ''}"><button class="phase-btn" data-act="phase" data-phase="${n}" aria-pressed="${n === selPhase}" ${n === ph ? 'aria-current="step"' : ''}>
+      <span class="n">${n < ph ? ic('check') : ''} ${esc(t('phase'))} ${n}</span>${esc(L(PHASES[n]))}<span class="cnt">${cnt} ${esc(t('activitiesN'))}</span></button></li>`; }).join('')}</ol>
+    ${ui.moodle ? `<p style="margin:8px 0 0">${mchip('phases')}</p>` : ''}
     <div class="tabs" role="tablist">${tabs.map(([k, i]) => `<button class="tab" role="tab" aria-selected="${ui.tab === k}" data-act="tab" data-tab="${k}">${ic(i)} ${esc(t('tab_' + k))}</button>`).join('')}</div>
     <section class="panel" role="tabpanel">${(panels[ui.tab] || tabActivities)(p, teacher)}</section>
   </main>`;
@@ -1036,7 +1050,7 @@ function tabActivities(p, teacher) {
   const u = me(); const acts = db.activities.filter((a) => a.projectId === p.id).sort(byDate('due'));
   const form = ui.form === 'activity' ? `<form class="card stack" data-form="createActivity" style="margin-bottom:16px">
       <div class="row">
-        <label class="field"><span>${esc(t('phase'))}</span><select id="f-a-phase" name="phase">${[1, 2, 3, 4].map((n) => `<option value="${n}" ${n === currentPhase(p.id) ? 'selected' : ''}>${n} · ${esc(L(PHASES[n]))}</option>`).join('')}</select></label>
+        <label class="field"><span>${esc(t('phase'))}</span><select id="f-a-phase" name="phase">${[1, 2, 3, 4].map((n) => `<option value="${n}" ${n === (ui.phase || currentPhase(p.id)) ? 'selected' : ''}>${n} · ${esc(L(PHASES[n]))}</option>`).join('')}</select></label>
         <label class="field"><span>${esc(t('kind'))}</span><select id="f-a-kind" name="kind">${['task', 'reflection', 'session'].map((k) => `<option value="${k}">${esc(t('kind_' + k))}</option>`).join('')}</select></label>
         <label class="field"><span>${esc(t('mode'))}</span><select id="f-a-mode" name="mode"><option value="team">${esc(t('mode_team'))}</option><option value="individual">${esc(t('mode_individual'))}</option></select></label>
       </div>
@@ -1056,12 +1070,13 @@ function tabActivities(p, teacher) {
       <label class="field"><span>${esc(t('instructions'))}</span><textarea id="f-a-ins" name="instructions"></textarea></label>
       <div><button class="btn" type="submit">${esc(t('create'))}</button></div>
     </form>` : '';
-  const body = [1, 2, 3, 4].map((n) => {
-    const list = acts.filter((a) => a.phase === n); if (!list.length) return '';
-    return `<div class="phase-group"><h3>${esc(t('phase'))} ${n} · ${esc(L(PHASES[n]))}</h3>${list.map((a) => activityItem(a, p, teacher)).join('')}</div>`;
-  }).join('');
+  const ph = ui.phase || currentPhase(p.id); const list = acts.filter((a) => a.phase === ph);
+  const doneN = teacher ? 0 : list.filter((a) => a.kind !== 'session' && isDone(a, u.id)).length; const reqN = list.filter((a) => a.kind !== 'session').length;
+  const head = `<div class="phase-head"><h3>${esc(t('phase'))} ${ph} · ${esc(L(PHASES[ph]))}</h3>
+    <div class="sub">${list.length} ${esc(t('activitiesN'))}${!teacher && reqN ? ` · ${doneN} ${esc(t('of'))} ${reqN} ${esc(t('completedN'))}` : ''}</div></div>`;
+  const body = list.length ? list.map((a) => activityItem(a, p, teacher)).join('') : `<div class="empty">${esc(t('noActsPhase'))}</div>`;
   return `<div class="panel-h"><h2>${esc(t('tab_activities'))}</h2><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${mchip('activities')}
-      ${teacher ? `<button class="btn" data-act="form" data-form="activity">${ic('plus')} ${esc(t('newActivity'))}</button>` : ''}</div></div>${form}${body || `<div class="empty">—</div>`}`;
+      ${teacher ? `<button class="btn" data-act="form" data-form="activity">${ic('plus')} ${esc(t('newActivity'))}</button>` : ''}</div></div>${form}${head}${body}`;
 }
 
 function activityItem(a, p, teacher) {
